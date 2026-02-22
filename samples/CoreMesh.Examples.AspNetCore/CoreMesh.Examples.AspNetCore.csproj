@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Dispatching\Dispatching.csproj" />
+    <ProjectReference Include="..\..\src\Validation\Validation.csproj" />
   </ItemGroup>
 
 </Project>
