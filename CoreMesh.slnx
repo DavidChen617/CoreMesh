@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/CoreMesh.Examples.AspNetCore/CoreMesh.Examples.AspNetCore.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Dispatching/Dispatching.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CoreMesh.Dispatching.Benchmarks/CoreMesh.Dispatching.Benchmarks.csproj" />
+    <Project Path="tests/CoreMesh.Dispatching.Tests/CoreMesh.Dispatching.Tests.csproj" />
+  </Folder>
+</Solution>
