@@ -2,9 +2,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Dispatching.Wrappers;
 
+/// <summary>
+/// Wrapper implementation for notification dispatching.
+/// </summary>
+/// <typeparam name="TNotification">The notification type.</typeparam>
 public class NotificationHandlerWrapperImpl<TNotification> : NotificationHandlerWrapper
     where TNotification : INotification
 {
+    /// <inheritdoc />
     public override async Task Handle(INotification notification, IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
     {
