@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>CoreMesh.Dispatching</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>DavidChen</Authors>
     <Description>Lightweight dispatcher/mediator-like library for .NET</Description>
     <PackageTags>dispatcher mediator cqrs coremesh</PackageTags>
