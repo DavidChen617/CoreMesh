@@ -4,6 +4,9 @@ using CoreMesh.Dispatching.Wrappers;
 
 namespace CoreMesh.Dispatching;
 
+/// <summary>
+/// Default dispatcher implementation for request and notification dispatching.
+/// </summary>
 public sealed class Dispatcher(IServiceProvider serviceProvider) : IDispatcher
 {
     private static readonly ConcurrentDictionary<Type, RequestHandlerBase> RequestHandlers = new();
@@ -12,6 +15,13 @@ public sealed class Dispatcher(IServiceProvider serviceProvider) : IDispatcher
     private static readonly ConcurrentDictionary<Type, Func<RequestHandlerBase>> VoidRequestFactoryCache = new();
     private static readonly ConcurrentDictionary<Type, Func<NotificationHandlerWrapper>> NotificationFactoryCache = new();
 
+    /// <summary>
+    /// Sends a request that expects a response.
+    /// </summary>
+    /// <typeparam name="TResponse">The response type.</typeparam>
+    /// <param name="request">The request instance.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The handler response.</returns>
     public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -30,6 +40,12 @@ public sealed class Dispatcher(IServiceProvider serviceProvider) : IDispatcher
         return wrapper.Handle(request, serviceProvider, cancellationToken);
     }
 
+    /// <summary>
+    /// Sends a request that does not return a response payload.
+    /// </summary>
+    /// <param name="request">The request instance.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task that completes when the handler finishes.</returns>
     public Task Send(IRequest request, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -47,6 +63,12 @@ public sealed class Dispatcher(IServiceProvider serviceProvider) : IDispatcher
         return wrapper.Handle(request, serviceProvider, cancellationToken);
     }
 
+    /// <summary>
+    /// Publishes a notification to all registered handlers.
+    /// </summary>
+    /// <param name="notification">The notification instance.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task that completes when all handlers finish.</returns>
     public Task Publish(INotification notification, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(notification);

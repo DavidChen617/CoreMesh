@@ -4,10 +4,17 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CoreMesh.Dispatching;
 
+/// <summary>
+/// Extension methods for registering CoreMesh dispatching services and handlers.
+/// </summary>
 public static class DispatchingServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
+        /// <summary>
+        /// Registers the dispatcher and scans all currently loaded assemblies for handlers.
+        /// </summary>
+        /// <returns>The service collection.</returns>
         public IServiceCollection AddDispatching()
         {
             services.TryAddScoped<IDispatcher, Dispatcher>();
@@ -18,6 +25,11 @@ public static class DispatchingServiceCollectionExtensions
             return services;
         }
 
+        /// <summary>
+        /// Registers the dispatcher and scans the specified assemblies for handlers.
+        /// </summary>
+        /// <param name="assemblies">The assemblies to scan.</param>
+        /// <returns>The service collection.</returns>
         public IServiceCollection AddDispatching(params Assembly[] assemblies)
         {
             services.TryAddScoped<IDispatcher, Dispatcher>();

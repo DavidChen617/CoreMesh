@@ -1,38 +1,40 @@
+English | [繁體中文](README.zh-TW.md)
+
 # CoreMesh.Dispatching
 
-`CoreMesh.Dispatching` 是 CoreMesh 的輕量 Dispatching 模組，提供：
+`CoreMesh.Dispatching` is a lightweight dispatching module for CoreMesh that provides:
 
-- `Send`：請求/回應（request/response）
-- `Send`：無回傳 command
-- `Publish`：事件通知（notification）
+- `Send` for request/response
+- `Send` for commands without a response payload
+- `Publish` for notifications/events
 
-設計目標：
+Design goals:
 
-- 簡單
-- 可讀
-- 易學習
-- 低執行成本（lazy cache）
+- Simple
+- Readable
+- Easy to learn
+- Low runtime overhead (lazy cache)
 
-## 目前特性
+## Current Features
 
-- `Dispatcher` 使用 wrapper + cache（懶加載）
-- Notification 預設為串行執行（安全優先）
-- 支援 `Microsoft.Extensions.DependencyInjection` 註冊與 assembly 掃描
-- 不包含 pipeline
+- `Dispatcher` uses wrapper + cache (lazy loading)
+- Notifications are executed sequentially by default (safety-first)
+- Supports `Microsoft.Extensions.DependencyInjection` registration and assembly scanning
+- No pipeline (intentionally excluded)
 
-## 核心介面
+## Core Interfaces
 
-- `IRequest<TResponse>`：有回傳的請求
-- `IRequest`：無回傳 command
+- `IRequest<TResponse>`: request with response
+- `IRequest`: command without response payload
 - `IRequestHandler<TRequest, TResponse>`
 - `IRequestHandler<TRequest>`
-- `INotification`：事件通知
+- `INotification`: event/notification
 - `INotificationHandler<TNotification>`
 - `IDispatcher`
 
-## 快速開始
+## Quick Start
 
-### 1. 定義 request/response 與 handler
+### 1. Define a request/response and handler
 
 ```csharp
 using CoreMesh.Dispatching;
@@ -48,7 +50,7 @@ public sealed class SampleHandler : IRequestHandler<SampleQuery, SampleResponse>
 }
 ```
 
-### 2. 註冊 Dispatcher 與 Handlers
+### 2. Register Dispatcher and handlers
 
 ```csharp
 using CoreMesh.Dispatching;
@@ -56,14 +58,14 @@ using CoreMesh.Dispatching;
 builder.Services.AddDispatching(typeof(SampleHandler).Assembly);
 ```
 
-或手動註冊：
+Or register manually:
 
 ```csharp
 builder.Services.AddScoped<IDispatcher, Dispatcher>();
 builder.Services.AddScoped<IRequestHandler<SampleQuery, SampleResponse>, SampleHandler>();
 ```
 
-### 3. 呼叫 `Send`
+### 3. Call `Send`
 
 ```csharp
 app.MapGet("/sample", async (IDispatcher dispatcher, CancellationToken ct) =>
@@ -73,7 +75,7 @@ app.MapGet("/sample", async (IDispatcher dispatcher, CancellationToken ct) =>
 });
 ```
 
-## Notification 範例（Publish）
+## Notification Example (`Publish`)
 
 ```csharp
 using CoreMesh.Dispatching;
@@ -99,117 +101,117 @@ public sealed class WelcomeEmailOnUserCreatedHandler : INotificationHandler<User
 }
 ```
 
-註冊：
+Registration:
 
 ```csharp
 builder.Services.AddScoped<INotificationHandler<UserCreated>, AuditLogOnUserCreatedHandler>();
 builder.Services.AddScoped<INotificationHandler<UserCreated>, WelcomeEmailOnUserCreatedHandler>();
 ```
 
-呼叫：
+Invocation:
 
 ```csharp
 await dispatcher.Publish(new UserCreated(123, "demo@coremesh.dev"), ct);
 ```
 
-## 行為說明
+## Behavior Notes
 
 ### Send
 
-- `Send(IRequest<TResponse>)`：必須有且只有一個對應 handler
-- `Send(IRequest)`：必須有且只有一個對應 handler
-- 若找不到 handler，會拋出 DI 解析例外（`InvalidOperationException`）
+- `Send(IRequest<TResponse>)`: requires exactly one matching handler
+- `Send(IRequest)`: requires exactly one matching handler
+- If no handler is registered, DI resolution throws (`InvalidOperationException`)
 
 ### Publish
 
-- `Publish(INotification)` 會執行所有對應的 `INotificationHandler<T>`
-- 目前為 **串行執行**（依註冊順序）
-- 適合安全優先場景（例如 handler 共用 scoped 依賴）
+- `Publish(INotification)` dispatches to all matching `INotificationHandler<T>`
+- Execution is **sequential** (in registration order)
+- This is safer when handlers share scoped dependencies
 
-## 適用場景（這個設計模式適合用在哪裡）
+## Use Cases (When This Pattern Fits)
 
-`CoreMesh.Dispatching` 採用的是「應用層請求分派（Dispatcher / Mediator-like）」模式，適合以下場景：
+`CoreMesh.Dispatching` follows an application-layer request dispatching (Mediator-like) pattern. It is suitable for:
 
-### 1. Web API / Minimal API 的應用層協調
+### 1. Application orchestration in Web API / Minimal API
 
-當 endpoint 不想直接依賴 service/repository，改為送出一個 request 給對應 handler 處理。
+When endpoints should stay thin and delegate use-case execution to handlers instead of calling services/repositories directly.
 
-適合：
-- 查詢（Query）
-- 命令（Command）
-- 應用層流程協調
+Good for:
+- Queries
+- Commands
+- Application workflow orchestration
 
-效果：
-- endpoint 更薄
-- 業務流程集中在 handler
-- 邏輯更容易測試
+Benefits:
+- Thinner endpoints
+- Use-case logic is centralized in handlers
+- Easier testing
 
-### 2. 單一職責拆分（避免 God Service）
+### 2. Splitting large application services (avoiding a God Service)
 
-把大量方法的 `ApplicationService` 拆成多個 request handler，每個 handler 只處理一個 use case。
+Replace a large `ApplicationService` with many focused request handlers, each handling one use case.
 
-適合：
-- 功能逐步增長的專案
-- 團隊多人協作（每人維護不同 handler）
+Good for:
+- Growing codebases
+- Team collaboration (ownership by feature/handler)
 
-### 3. 事件通知（Notification）驅動的後續動作
+### 3. Notification-driven follow-up actions
 
-一個主流程完成後，透過 `Publish` 廣播事件，讓多個 handler 處理後續副作用。
+After a primary workflow completes, use `Publish` to trigger multiple follow-up side effects.
 
-例如：
-- 使用者建立後：寫審計、寄信、記錄 metrics
-- 訂單付款後：更新報表、通知外部系統、寫 outbox
+Examples:
+- After user creation: audit log, welcome email, metrics
+- After payment: reporting update, external notification, outbox write
 
-### 4. 想保留簡單架構，但需要統一入口
+### 4. A lightweight unified entry point without a full framework
 
-不想一開始導入完整 CQRS/DDD 框架，只需要一個輕量、可控、低開銷的分派機制。
+When you do not want a full CQRS/DDD framework yet, but still want a small, predictable dispatching abstraction.
 
-## 這個模組幫你處理了哪些事情
+## What This Module Handles
 
-`CoreMesh.Dispatching` 主要處理的是「請求/通知的分派與調用」，而不是業務邏輯本身。
+`CoreMesh.Dispatching` is responsible for request/notification dispatching and invocation, not business logic itself.
 
-### 已處理的事情
+### Included Responsibilities
 
-- `Request -> Handler` 對應與呼叫（`Send`）
-- `Notification -> 多個 Handlers` 的分派（`Publish`）
-- DI 容器中的 handler 解析
-- Handler 探索與註冊（assembly 掃描）
-- 執行期 wrapper 快取（lazy cache）
-- 首次型別包裝建立（wrapper factory cache）
+- `Request -> Handler` dispatch (`Send`)
+- `Notification -> Handlers` dispatch (`Publish`)
+- Handler resolution from DI
+- Handler discovery and registration (assembly scanning)
+- Runtime wrapper cache (lazy cache)
+- Wrapper factory cache for first-time type wrapping
 
-### 刻意不處理的事情（目前版本）
+### Intentionally Not Included (Current Version)
 
 - Validation pipeline
 - Logging pipeline
 - Retry / Circuit breaker
 - Transaction / Unit of Work
 - Authorization
-- ASP.NET Core endpoint 抽象
-- Outbox / Message broker 發送
+- ASP.NET Core endpoint abstraction
+- Outbox / message broker delivery
 
-這些屬於 cross-cutting concern 或基礎設施整合，建議放在外層模組處理（例如 endpoint、middleware、decorator、背景工作）。
+These are cross-cutting concerns or infrastructure integrations and are better handled in outer modules (endpoint layer, middleware, decorators, background jobs).
 
-## 設計取捨
+## Design Trade-offs
 
-### 為什麼沒有 Pipeline？
+### Why no Pipeline?
 
-目前版本刻意不包含 pipeline，以保持：
+This version intentionally excludes pipeline support to keep:
 
-- 更低延遲
-- 更少配置
-- 更簡單的執行路徑
+- Lower latency
+- Fewer allocations
+- A simpler execution path
 
-Validation / logging / proxy 等 cross-cutting concern 建議先放在外層（例如 endpoint、middleware、decorator）。
+Cross-cutting concerns such as validation, logging, or proxy behavior can be handled outside the dispatcher (for example: endpoint layer, middleware, decorators).
 
-## 注意事項
+## Notes
 
-- 建議明確傳入 assembly 掃描（例如 `typeof(SomeHandler).Assembly`）
-- 若使用 `AddDispatching()` 無參數版本，會掃描目前已載入 assemblies（啟動成本較高）
-- 一個 request 型別應對應一種回應型別（`IRequest<TResponse>`）
+- Prefer explicit assembly scanning (for example `typeof(SomeHandler).Assembly`)
+- `AddDispatching()` without parameters scans currently loaded assemblies (higher startup cost)
+- A request type should correspond to a single response type (`IRequest<TResponse>`)
 
-## 後續方向
+## Future Directions
 
 - `AddDispatchingFromAssemblyContaining<T>()`
-- 更精細的 DI 註冊選項（lifetime / filter）
-- Notification publisher 策略（串行 / 並行可切換）
-- Source Generator（進一步降低 runtime 型別解析成本）
+- More DI registration options (lifetime / filters)
+- Configurable notification publisher strategies (sequential / parallel)
+- Source generator support to further reduce runtime type-resolution overhead

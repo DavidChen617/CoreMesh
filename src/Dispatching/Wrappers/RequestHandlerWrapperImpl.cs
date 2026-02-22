@@ -2,9 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Dispatching.Wrappers;
 
+/// <summary>
+/// Wrapper implementation for requests that return a response.
+/// </summary>
+/// <typeparam name="TRequest">The request type.</typeparam>
+/// <typeparam name="TResponse">The response type.</typeparam>
 public sealed class RequestHandlerWrapperImpl<TRequest, TResponse> : RequestHandlerWrapper<TResponse>
     where TRequest : IRequest<TResponse>
 {
+    /// <inheritdoc />
     public override Task<TResponse> Handle(IRequest<TResponse> request, IServiceProvider serviceProvider,
         CancellationToken cancellationToken = default)
     {
@@ -12,6 +18,7 @@ public sealed class RequestHandlerWrapperImpl<TRequest, TResponse> : RequestHand
             .Handle((TRequest)request, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override async Task<object?> Handle(object request, IServiceProvider serviceProvider,
         CancellationToken cancellationToken = default)
     {
@@ -19,9 +26,14 @@ public sealed class RequestHandlerWrapperImpl<TRequest, TResponse> : RequestHand
     }
 }
 
+/// <summary>
+/// Wrapper implementation for requests that do not return a response payload.
+/// </summary>
+/// <typeparam name="TRequest">The request type.</typeparam>
 public sealed class RequestHandlerWrapperImpl<TRequest> : RequestHandlerWrapper
     where TRequest : IRequest
 {
+    /// <inheritdoc />
     public override async Task<object?> Handle(
         object request,
         IServiceProvider serviceProvider,
@@ -31,6 +43,7 @@ public sealed class RequestHandlerWrapperImpl<TRequest> : RequestHandlerWrapper
         return null;
     }
 
+    /// <inheritdoc />
     public override Task Handle(
         IRequest request,
         IServiceProvider serviceProvider,
