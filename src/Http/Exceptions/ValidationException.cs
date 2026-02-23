@@ -7,6 +7,12 @@ namespace CoreMesh.Http.Exceptions;
 /// </summary>
 public sealed class ValidationException : AppException
 {
+
+    /// <summary>
+    /// Gets the grouped validation errors keyed by field name.
+    /// </summary>
+    public IDictionary<string, string[]> Errors { get; }
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="ValidationException"/> class from grouped errors.
     /// </summary>
@@ -45,11 +51,6 @@ public sealed class ValidationException : AppException
                 g => g.Key,
                 g => g.Select(f => f.ErrorMessage).ToArray());
     }
-
-    /// <summary>
-    /// Gets the grouped validation errors keyed by field name.
-    /// </summary>
-    public IDictionary<string, string[]> Errors { get; }
 }
 
 /// <summary>

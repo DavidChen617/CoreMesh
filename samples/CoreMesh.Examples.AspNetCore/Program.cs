@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CoreMesh.Dispatching;
 using CoreMesh.Validation.Extensions;
 using CoreMesh.Examples.AspNetCore.Samples.Products;
