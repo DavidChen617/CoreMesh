@@ -40,6 +40,18 @@ public class ApiResponse
             Problem = problem, 
             Code = code
         };
+    
+    /// <summary>
+    /// Creates a success response envelope.
+    /// </summary>
+    /// <param name="code">The application-specific code.</param>
+    /// <returns>A success response envelope.</returns>
+    public static ApiResponse OnSuccess(string code = "ok")
+        => new()
+        {
+            IsSuccess = true,
+            Code = code
+        };
 }
 
 /// <summary>

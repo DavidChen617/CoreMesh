@@ -25,7 +25,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCoreMeshHttp();
 
-app.MapGet("/", ([FromServices] IDispatcher dispatcher) => dispatcher.Send(new SampleQuery("Foo", "Bar")));
+app.MapGet("/",
+    async ([FromServices] IDispatcher dispatcher) =>
+    TypedResults.Ok(
+        ApiResponse<SampleResponse>.OnSuccess(await dispatcher.Send(new SampleQuery("Foo", "Bar"))
+        )));
+
 app.MapPost("/users", async ([FromServices] IDispatcher dispatcher, CancellationToken ct) =>
 {
     var user = new UserCreated(123, "demo@coremesh.dev");
@@ -33,23 +38,21 @@ app.MapPost("/users", async ([FromServices] IDispatcher dispatcher, Cancellation
     await dispatcher.Send(user);
     await dispatcher.Publish(user, ct);
 
-    return Results.Ok(new { UserId = user.UserId });
+    return TypedResults.Ok(ApiResponse<object>.OnSuccess(new { user.UserId }));
 });
 
 app.MapPost("product", async (
-    [FromBody] CreateProductCommand command, 
+    [FromBody] CreateProductCommand command,
     [FromServices] IDispatcher dispatcher,
     CancellationToken cancellationToken = default) =>
-{ 
+{
     await dispatcher.Send(command, cancellationToken);
-    
-    return Results.Ok();
+    return TypedResults.Ok(ApiResponse.OnSuccess());
 });
 
 app.MapGet("/products/{id:int}", (int id) =>
 {
     var data = new Product { Id = id, Name = "Book" };
-    // throw new NotFoundException("Product", id);
     return TypedResults.Ok(ApiResponse<Product>.OnSuccess(data, code: "ok"));
 });
 
