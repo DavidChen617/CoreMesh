@@ -1,9 +1,19 @@
 namespace CoreMesh.Validation;
 
+/// <summary>
+/// Represents a validation rule for a single property.
+/// </summary>
+/// <typeparam name="T">The model type.</typeparam>
+/// <typeparam name="TProperty">The property type.</typeparam>
 public sealed class PropertyRule<T, TProperty>(string propertyName, Func<T, TProperty> propertyFunc) : IValidationRule<T>
 {
     private readonly List<PropertyRuleComponent> _components = [];
 
+    /// <summary>
+    /// Adds a property validator to this rule.
+    /// </summary>
+    /// <param name="validator">The property validator.</param>
+    /// <returns>The component index for later metadata updates.</returns>
     public int AddValidator(IPropertyValidator<TProperty> validator)
     {
         ArgumentNullException.ThrowIfNull(validator);
@@ -12,6 +22,11 @@ public sealed class PropertyRule<T, TProperty>(string propertyName, Func<T, TPro
         return _components.Count - 1;
     }
 
+    /// <summary>
+    /// Sets a custom error message for a previously added validator component.
+    /// </summary>
+    /// <param name="componentIndex">The validator component index.</param>
+    /// <param name="message">The custom error message.</param>
     public void SetCustomMessage(int componentIndex, string message)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(componentIndex);
@@ -25,6 +40,11 @@ public sealed class PropertyRule<T, TProperty>(string propertyName, Func<T, TPro
         _components[componentIndex].CustomMessage = message;
     }
 
+    /// <summary>
+    /// Validates the property value and appends failures to the result list.
+    /// </summary>
+    /// <param name="instance">The model instance.</param>
+    /// <param name="failures">The failure collection.</param>
     public void Validate(T instance, List<ValidationFailure> failures)
     {
         ArgumentNullException.ThrowIfNull(failures);

@@ -1,17 +1,25 @@
 namespace CoreMesh.Validation.Validators;
 
+/// <summary>
+/// Provides property validation logic for this rule type.
+/// </summary>
 public sealed class RangeValidator<TProperty> : IPropertyValidator<TProperty>
 {
-    private string? _message;
 
     private readonly TProperty _min;
     private readonly TProperty _max;
+    /// <summary>
+    /// Initializes a new instance of the validator.
+    /// </summary>
 
     public RangeValidator(TProperty min, TProperty max)
     {
         _min = min;
         _max = max;
     }
+    /// <summary>
+    /// Determines whether the value is valid.
+    /// </summary>
 
     public bool IsValid(TProperty value)
     {
@@ -27,16 +35,12 @@ public sealed class RangeValidator<TProperty> : IPropertyValidator<TProperty>
 
         return comparable.CompareTo(_min) >= 0 && comparable.CompareTo(_max) <= 0;
     }
+    /// <summary>
+    /// Gets the error message for a failed validation.
+    /// </summary>
 
     public string GetErrorMessage(string propertyName)
     {
-        return _message ?? $"'{propertyName}' must be between '{_min}' and '{_max}'.";
-    }
-
-
-    public void SetMessage(string message)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(message);
-        _message = message;
+        return $"'{propertyName}' must be between '{_min}' and '{_max}'.";
     }
 }

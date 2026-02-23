@@ -1,10 +1,15 @@
 namespace CoreMesh.Validation.Validators;
 
+/// <summary>
+/// Provides property validation logic for this rule type.
+/// </summary>
 public sealed class MinimumLengthValidator : IPropertyValidator<string?>
 {
-    private string? _message;
 
     private readonly int _min;
+    /// <summary>
+    /// Initializes a new instance of the validator.
+    /// </summary>
 
     public MinimumLengthValidator(int min)
     {
@@ -15,6 +20,9 @@ public sealed class MinimumLengthValidator : IPropertyValidator<string?>
 
         _min = min;
     }
+    /// <summary>
+    /// Determines whether the value is valid.
+    /// </summary>
 
     public bool IsValid(string? value)
     {
@@ -25,16 +33,12 @@ public sealed class MinimumLengthValidator : IPropertyValidator<string?>
 
         return value.Length >= _min;
     }
+    /// <summary>
+    /// Gets the error message for a failed validation.
+    /// </summary>
 
     public string GetErrorMessage(string propertyName)
     {
-        return _message ?? $"'{propertyName}' length must be at least {_min}.";
-    }
-
-
-    public void SetMessage(string message)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(message);
-        _message = message;
+        return $"'{propertyName}' length must be at least {_min}.";
     }
 }
