@@ -1,11 +1,13 @@
 <Solution>
   <Folder Name="/samples/">
     <Project Path="samples/CoreMesh.Examples.AspNetCore/CoreMesh.Examples.AspNetCore.csproj" />
+    <Project Path="samples/CoreMesh.Examples.Console/CoreMesh.Examples.Console.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Dispatching/Dispatching.csproj" />
     <Project Path="src/Endpoints/Endpoints.csproj" />
     <Project Path="src/Http/Http.csproj" />
+    <Project Path="src/Mapper/Mapper.csproj" />
     <Project Path="src/Validation/Validation.csproj" />
   </Folder>
   <Folder Name="/tests/">
@@ -13,6 +15,8 @@
     <Project Path="tests/CoreMesh.Dispatching.Tests/CoreMesh.Dispatching.Tests.csproj" />
     <Project Path="tests/CoreMesh.Endpoint.Tests/CoreMesh.Endpoint.Tests.csproj" />
     <Project Path="tests/CoreMesh.Http.Tests/CoreMesh.Http.Tests.csproj" />
+    <Project Path="tests/CoreMesh.Mapper.Benchmarks/CoreMesh.Mapper.Benchmarks.csproj" />
+    <Project Path="tests/CoreMesh.Mapper.Tests/CoreMesh.Mapper.Tests.csproj" />
     <Project Path="tests/CoreMesh.Validation.Tests/CoreMesh.Validation.Tests.csproj" />
   </Folder>
 </Solution>
