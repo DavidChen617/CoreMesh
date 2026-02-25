@@ -5,18 +5,21 @@ using CoreMesh.Http.Responses;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Endpoints;
 
-public sealed class UsersEndpoint : IEndpoint
+public sealed class UsersEndpoint : IGroupedEndpoint<UserGroupEndpoint>
 {
-    public void AddRoute(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder app)
+    public void AddRoute(RouteGroupBuilder group)
     {
-        app.MapPost("/users", async (IDispatcher dispatcher, CancellationToken ct) =>
-        {
-            var user = new UserCreated(123, "demo@coremesh.dev");
+        group.MapPost("", HandleAsync)
+            .MapToApiVersion(2);
+    }
 
-            await dispatcher.Send(user);
-            await dispatcher.Publish(user, ct);
+    private static async Task<IResult> HandleAsync(IDispatcher dispatcher, CancellationToken ct)
+    {
+        var user = new UserCreated(123, "demo@coremesh.dev");
 
-            return TypedResults.Ok(ApiResponse<object>.OnSuccess(new { user.UserId }));
-        });
+        await dispatcher.Send(user, ct);
+        await dispatcher.Publish(user, ct);
+
+        return TypedResults.Ok(ApiResponse<object>.OnSuccess(new { user.UserId }));
     }
 }
