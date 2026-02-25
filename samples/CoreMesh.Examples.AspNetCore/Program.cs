@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using CoreMesh.Dispatching;
 using CoreMesh.Endpoints.Extensions;
+using CoreMesh.Mapper.Extensions;
 using CoreMesh.Validation.Extensions;
 using CoreMesh.Http.Extensions;
 
@@ -22,6 +23,7 @@ builder.Services.AddOpenApi();
 
 builder.Services
     .AddDispatching()
+    .AddCoreMeshMapper(typeof(Program).Assembly)
     .AddValidation()
     .AddCoreMeshHttp();
 
