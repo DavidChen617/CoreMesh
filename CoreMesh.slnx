@@ -4,12 +4,14 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Dispatching/Dispatching.csproj" />
+    <Project Path="src/Endpoints/Endpoints.csproj" />
     <Project Path="src/Http/Http.csproj" />
     <Project Path="src/Validation/Validation.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CoreMesh.Dispatching.Benchmarks/CoreMesh.Dispatching.Benchmarks.csproj" />
     <Project Path="tests/CoreMesh.Dispatching.Tests/CoreMesh.Dispatching.Tests.csproj" />
+    <Project Path="tests/CoreMesh.Endpoint.Tests/CoreMesh.Endpoint.Tests.csproj" />
     <Project Path="tests/CoreMesh.Http.Tests/CoreMesh.Http.Tests.csproj" />
     <Project Path="tests/CoreMesh.Validation.Tests/CoreMesh.Validation.Tests.csproj" />
   </Folder>
