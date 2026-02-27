@@ -3,23 +3,52 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Interception.Extensions;
 
+/// <summary>
+/// Extension methods for registering interceptors with dependency injection.
+/// </summary>
 public static class InterceptorExtension
 {
     extension(Type type)
     {
-        private IEnumerable<Attribute> GetInterfaceAttributesWithInherited()  
-        {                                                                                                                          
-            foreach (var attr in type.GetCustomAttributes())                                                                       
-                yield return attr;                                                                                                 
-                                                                                                                             
-            foreach (var parentInterface in type.GetInterfaces())                                                               
-            foreach (var attr in parentInterface.GetCustomAttributes())                                                        
-                yield return attr;                                                                                             
+        private IEnumerable<Attribute> GetInterfaceAttributesWithInherited()
+        {
+            foreach (var attr in type.GetCustomAttributes())
+                yield return attr;
+
+            foreach (var parentInterface in type.GetInterfaces())
+            foreach (var attr in parentInterface.GetCustomAttributes())
+                yield return attr;
         }
     }
 
     extension(IServiceCollection services)
     {
+        /// <summary>
+        /// Scans the specified assemblies for interceptors and interfaces decorated with
+        /// <see cref="InterceptedByAttribute{T}"/>, then wraps registered services with proxies.
+        /// </summary>
+        /// <param name="assemblies">The assemblies to scan for interceptors and intercepted interfaces.</param>
+        /// <returns>The service collection for chaining.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method performs the following:
+        /// <list type="number">
+        /// <item>Registers all <see cref="IInterceptor"/> and <see cref="IAsyncInterceptor"/> implementations as keyed singletons.</item>
+        /// <item>Finds interfaces with <see cref="InterceptedByAttribute{T}"/> (including inherited attributes).</item>
+        /// <item>Wraps existing service registrations with <see cref="InterceptorProxy{T}"/> or <see cref="AsyncInterceptorProxy{T}"/>.</item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// If an interface has multiple interceptors, they are combined using <see cref="CompositeInterceptor"/>.
+        /// If any interceptor is async, the async proxy is used.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// services.AddSingleton&lt;IMyService, MyService&gt;();
+        /// services.AddInterceptor(typeof(Program).Assembly);
+        /// </code>
+        /// </example>
         public IServiceCollection AddInterceptor(params Assembly[] assemblies)
         {
             // Find all interceptor types (both sync and async)
@@ -74,7 +103,7 @@ public static class InterceptorExtension
                 })
                 .Where(x => x.interceptorTypes.Count > 0);
 
-            // Reregister with interceptor
+            // Reregister with interceptor proxy
             foreach (var (interfaceType, interceptors) in interceptorAndInterfaceType)
             {
                 var original = services.FirstOrDefault(t => t.ServiceType == interfaceType);
@@ -100,7 +129,7 @@ public static class InterceptorExtension
                 var proxyInterceptorType = hasAsync ? typeof(IAsyncInterceptor) : typeof(IInterceptor);
 
                 var createMethod = proxyType.GetMethod(
-                                       nameof(InterceptorProxy<>.Create),
+                                       nameof(InterceptorProxy<object>.Create),
                                        BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy,
                                        [interfaceType, proxyInterceptorType]) ??
                                    throw new InvalidOperationException($"Method Create not found on {proxyType.Name}!");
