@@ -1,11 +1,22 @@
 ﻿using System.Text.Json;
 using CoreMesh.Examples.Console;
+using CoreMesh.Examples.Console.Samples.Interception;
+using CoreMesh.Interception.Extensions;
 using CoreMesh.Mapper;
 using CoreMesh.Mapper.Extensions;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddScoped<IMyService, MyService>();
+
 builder.Services.AddCoreMeshMapper([typeof(Program).Assembly]);
-using var app = builder.Build();
+builder.Services.AddInterceptor([typeof(Program).Assembly]);
+
+var app = builder.Build();
+var service = app.Services.GetService<IMyService>();
+
+var s = await service!.Add(1, 2);
+Console.WriteLine(s[0]);
+
 var mapper = app.Services.GetRequiredService<IMapper>();
 
 var singleUser = new User()
@@ -18,7 +29,7 @@ var singleUser = new User()
 };
 
 var singleUserDto = mapper.Map<User, UserDto>(singleUser);
-Console.WriteLine(JsonSerializer.Serialize(singleUserDto));
+// Console.WriteLine(JsonSerializer.Serialize(singleUserDto));
 
 var users =  new List<User>();
 
@@ -35,10 +46,10 @@ for (int i = 0; i < 10; i++)
 }
 
 var dtos = mapper.Map<User, UserDto>(users);
-Console.WriteLine($"Dtos: {JsonSerializer.Serialize(dtos)}");
+// Console.WriteLine($"Dtos: {JsonSerializer.Serialize(dtos)}");
 
 var revertToUser  = mapper.Map<UserDto, User>(singleUserDto);
-Console.WriteLine($" revertToUser {JsonSerializer.Serialize(revertToUser)}");
+// Console.WriteLine($" revertToUser {JsonSerializer.Serialize(revertToUser)}");
 
 var revertToUsers = mapper.Map<UserDto, User>(dtos);
-Console.WriteLine($" revertToUsers {JsonSerializer.Serialize(revertToUsers)}");
+// Console.WriteLine($" revertToUsers {JsonSerializer.Serialize(revertToUsers)}");

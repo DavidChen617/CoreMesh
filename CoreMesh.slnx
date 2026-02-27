@@ -7,6 +7,7 @@
     <Project Path="src/Dispatching/Dispatching.csproj" />
     <Project Path="src/Endpoints/Endpoints.csproj" />
     <Project Path="src/Http/Http.csproj" />
+    <Project Path="src/Interception/Interception.csproj" />
     <Project Path="src/Mapper/Mapper.csproj" />
     <Project Path="src/Validation/Validation.csproj" />
   </Folder>
@@ -15,6 +16,8 @@
     <Project Path="tests/CoreMesh.Dispatching.Tests/CoreMesh.Dispatching.Tests.csproj" />
     <Project Path="tests/CoreMesh.Endpoint.Tests/CoreMesh.Endpoint.Tests.csproj" />
     <Project Path="tests/CoreMesh.Http.Tests/CoreMesh.Http.Tests.csproj" />
+    <Project Path="tests/CoreMesh.Interceptions.Benchmark/CoreMesh.Interceptions.Benchmark.csproj" />
+    <Project Path="tests/CoreMesh.Interceptions.Tests/CoreMesh.Interceptions.Tests.csproj" />
     <Project Path="tests/CoreMesh.Mapper.Benchmarks/CoreMesh.Mapper.Benchmarks.csproj" />
     <Project Path="tests/CoreMesh.Mapper.Tests/CoreMesh.Mapper.Tests.csproj" />
     <Project Path="tests/CoreMesh.Validation.Tests/CoreMesh.Validation.Tests.csproj" />
