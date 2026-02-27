@@ -2,23 +2,44 @@ using System.Reflection;
 
 namespace CoreMesh.Interception;
 
+/// <summary>
+/// Combines multiple interceptors into a single interceptor that invokes them in sequence.
+/// Implements both <see cref="IInterceptor"/> and <see cref="IAsyncInterceptor"/> to support mixed interceptor types.
+/// </summary>
+/// <remarks>
+/// When used with <see cref="IInterceptor"/>, async interceptors will be blocked using GetAwaiter().GetResult().
+/// When used with <see cref="IAsyncInterceptor"/>, sync interceptors are wrapped as completed ValueTasks.
+/// </remarks>
 public class CompositeInterceptor : IInterceptor, IAsyncInterceptor
 {
     private readonly IInterceptorBase[] _interceptors;
 
+    /// <summary>
+    /// Creates a composite interceptor from mixed interceptor types.
+    /// </summary>
+    /// <param name="interceptors">The interceptors to combine.</param>
     public CompositeInterceptor(params IInterceptorBase[] interceptors)
         => _interceptors = interceptors;
 
+    /// <summary>
+    /// Creates a composite interceptor from synchronous interceptors only.
+    /// </summary>
+    /// <param name="interceptors">The synchronous interceptors to combine.</param>
     public CompositeInterceptor(params IInterceptor[] interceptors)
         : this(interceptors.Cast<IInterceptorBase>().ToArray())
     {
     }
 
+    /// <summary>
+    /// Creates a composite interceptor from asynchronous interceptors only.
+    /// </summary>
+    /// <param name="interceptors">The asynchronous interceptors to combine.</param>
     public CompositeInterceptor(params IAsyncInterceptor[] interceptors)
         : this(interceptors.Cast<IInterceptorBase>().ToArray())
     {
     }
 
+    /// <inheritdoc />
     void IInterceptor.BeforeInvoke(MethodInfo method, object?[]? args)
     {
         foreach (var interceptor in _interceptors)
@@ -28,6 +49,7 @@ public class CompositeInterceptor : IInterceptor, IAsyncInterceptor
                 async.BeforeInvoke(method, args).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc />
     void IInterceptor.AfterInvoke(MethodInfo method, object?[]? args, object? result)
     {
         foreach (var interceptor in _interceptors)
@@ -37,6 +59,7 @@ public class CompositeInterceptor : IInterceptor, IAsyncInterceptor
                 async.AfterInvoke(method, args, result).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc />
     void IInterceptor.OnError(MethodInfo method, object?[]? args, Exception error)
     {
         foreach (var interceptor in _interceptors)
@@ -46,6 +69,7 @@ public class CompositeInterceptor : IInterceptor, IAsyncInterceptor
                 async.OnError(method, args, error).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc />
     ValueTask IAsyncInterceptor.BeforeInvoke(MethodInfo method, object?[]? args)
     {
         for (var i = 0; i < _interceptors.Length; i++)
@@ -58,6 +82,7 @@ public class CompositeInterceptor : IInterceptor, IAsyncInterceptor
         return default;
     }
 
+    /// <inheritdoc />
     ValueTask IAsyncInterceptor.AfterInvoke(MethodInfo method, object?[]? args, object? result)
     {
         for (var i = 0; i < _interceptors.Length; i++)
@@ -70,6 +95,7 @@ public class CompositeInterceptor : IInterceptor, IAsyncInterceptor
         return default;
     }
 
+    /// <inheritdoc />
     ValueTask IAsyncInterceptor.OnError(MethodInfo method, object?[]? args, Exception error)
     {
         for (var i = 0; i < _interceptors.Length; i++)

@@ -3,6 +3,12 @@ using System.Reflection;
 
 namespace CoreMesh.Interception;
 
+/// <summary>
+/// A dynamic proxy that wraps an interface implementation with synchronous interception support.
+/// Uses <see cref="DispatchProxy"/> to intercept method calls and invoke <see cref="IInterceptor"/> hooks.
+/// Supports Task, Task&lt;T&gt;, ValueTask, and ValueTask&lt;T&gt; return types.
+/// </summary>
+/// <typeparam name="T">The interface type to proxy.</typeparam>
 public class InterceptorProxy<T> : DispatchProxy where T : class
 {
     private T? _instance;
@@ -15,6 +21,7 @@ public class InterceptorProxy<T> : DispatchProxy where T : class
     private static readonly MethodInfo InvokeAsyncValueTaskMethod = GetMethodInfo(nameof(InvokeAsyncValueTask));
     private static readonly MethodInfo InvokeAsyncGenericValueTask = GetMethodInfo(nameof(InvokeAsyncValueTask), 1);
 
+    /// <inheritdoc />
     protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
     {
         if (targetMethod is null)
@@ -34,11 +41,11 @@ public class InterceptorProxy<T> : DispatchProxy where T : class
             return method?.Invoke(this, [targetMethod, args]);
         }
 
-        // ValueTask                                                                                              
+        // ValueTask
         if (returnType == typeof(ValueTask))
             return InvokeAsyncValueTaskMethod.Invoke(this, [targetMethod, args]);
 
-        // ValueTask<T>                                                                                                 
+        // ValueTask<T>
         if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ValueTask<>))
         {
             var method = TaskMethodCache.GetOrAdd(returnType, rt =>
@@ -47,7 +54,7 @@ public class InterceptorProxy<T> : DispatchProxy where T : class
             return method?.Invoke(this, [targetMethod, args]);
         }
 
-        // Not-Task/ValueTask Invoke
+        // Synchronous method invocation
         try
         {
             _interceptor?.BeforeInvoke(targetMethod, args);
@@ -62,6 +69,12 @@ public class InterceptorProxy<T> : DispatchProxy where T : class
         }
     }
 
+    /// <summary>
+    /// Creates a new proxy instance that wraps the target with the specified interceptor.
+    /// </summary>
+    /// <param name="target">The target instance to wrap.</param>
+    /// <param name="interceptor">The interceptor to apply.</param>
+    /// <returns>A proxy instance of type <typeparamref name="T"/>.</returns>
     public static T? Create(T target, IInterceptor interceptor)
     {
         var proxy = Create<T, InterceptorProxy<T>>() as InterceptorProxy<T>;
@@ -131,7 +144,6 @@ public class InterceptorProxy<T> : DispatchProxy where T : class
             throw;
         }
     }
-
 
     private static MethodInfo GetMethodInfo(string methodName, int genericParameterCount = 0) =>
         typeof(InterceptorProxy<T>).GetMethod(

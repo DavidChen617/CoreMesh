@@ -4,8 +4,11 @@ using System.Reflection;
 namespace CoreMesh.Interception;
 
 /// <summary>
-/// Async interceptor proxy using IAsyncInterceptor
+/// A dynamic proxy that wraps an interface implementation with asynchronous interception support.
+/// Uses <see cref="DispatchProxy"/> to intercept method calls and invoke <see cref="IAsyncInterceptor"/> hooks.
+/// Supports Task, Task&lt;T&gt;, ValueTask, and ValueTask&lt;T&gt; return types.
 /// </summary>
+/// <typeparam name="T">The interface type to proxy.</typeparam>
 public class AsyncInterceptorProxy<T> : DispatchProxy where T : class
 {
     private T? _instance;
@@ -18,6 +21,7 @@ public class AsyncInterceptorProxy<T> : DispatchProxy where T : class
     private static readonly MethodInfo InvokeAsyncValueTaskMethod = GetMethodInfo(nameof(InvokeAsyncValueTask));
     private static readonly MethodInfo InvokeAsyncGenericValueTask = GetMethodInfo(nameof(InvokeAsyncValueTask), 1);
 
+    /// <inheritdoc />
     protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
     {
         if (targetMethod is null)
@@ -65,6 +69,12 @@ public class AsyncInterceptorProxy<T> : DispatchProxy where T : class
         }
     }
 
+    /// <summary>
+    /// Creates a new proxy instance that wraps the target with the specified async interceptor.
+    /// </summary>
+    /// <param name="target">The target instance to wrap.</param>
+    /// <param name="interceptor">The async interceptor to apply.</param>
+    /// <returns>A proxy instance of type <typeparamref name="T"/>.</returns>
     public static T? Create(T target, IAsyncInterceptor interceptor)
     {
         var proxy = Create<T, AsyncInterceptorProxy<T>>() as AsyncInterceptorProxy<T>;
