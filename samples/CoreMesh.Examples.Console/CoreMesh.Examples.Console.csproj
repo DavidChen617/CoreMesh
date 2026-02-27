@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Mapper\Mapper.csproj" />
+    <ProjectReference Include="..\..\src\Interception\Interception.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
