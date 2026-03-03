@@ -4,7 +4,6 @@ using CoreMesh.Endpoints.Extensions;
 using CoreMesh.Mapper.Extensions;
 using CoreMesh.Validation.Extensions;
 using CoreMesh.Http.Extensions;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
@@ -23,9 +22,11 @@ builder.Services.AddOpenApi();
 
 builder.Services
     .AddDispatching()
-    .AddCoreMeshMapper(typeof(Program).Assembly)
+    .AddCoreMeshMapper([typeof(Program).Assembly])
     .AddValidation()
     .AddCoreMeshHttp();
+
+// builder.Services.AddLogging(logging => { });
 
 var app = builder.Build();
 
