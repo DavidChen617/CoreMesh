@@ -21,8 +21,7 @@ public interface IRequestHandler<in TRequest, TResponse>
 /// Handles a request that does not produce a response payload.
 /// </summary>
 /// <typeparam name="TRequest">The request type.</typeparam>
-public interface IRequestHandler<in TRequest>
-    where TRequest : IRequest
+public interface IRequestHandler<in TRequest> where TRequest : IRequest
 {
     /// <summary>
     /// Handles the specified request.
