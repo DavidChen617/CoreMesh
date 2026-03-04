@@ -38,7 +38,7 @@ public sealed class ValidationExceptionHandler(ILogger<ValidationExceptionHandle
         };
         problem.Extensions["traceId"] = httpContext.TraceIdentifier;
         problem.Extensions["errors"] = validation.Errors;
-        
+
         await httpContext.Response.WriteAsJsonAsync(
             ApiResponse.OnFailure(problem, "validation_error"),
             cancellationToken);

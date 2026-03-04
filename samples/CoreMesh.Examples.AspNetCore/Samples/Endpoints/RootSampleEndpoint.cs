@@ -13,7 +13,7 @@ public sealed class RootSampleEndpoint : IEndpoint
         app.MapGet("/", HandleAsync);
     }
 
-    private static async Task<IResult> HandleAsync([FromBody] SampleQuery query ,IDispatcher dispatcher)
+    private static async Task<IResult> HandleAsync([FromBody] SampleQuery query, IDispatcher dispatcher)
     {
         return TypedResults.Ok(ApiResponse<SampleResponse>.OnSuccess(await dispatcher.Send(query)));
     }

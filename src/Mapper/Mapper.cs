@@ -33,8 +33,8 @@ public class Mapper : IMapper
 
     private void RegisterIMapFrom(Type type)
     {
-        IEnumerable<Type> interfaces = GetInterfaces(type,  typeof(IMapFrom<,>));
-        
+        IEnumerable<Type> interfaces = GetInterfaces(type, typeof(IMapFrom<,>));
+
         foreach (var @interface in interfaces)
         {
             var args = @interface.GetGenericArguments();
@@ -47,7 +47,7 @@ public class Mapper : IMapper
                 type,
                 @interface,
                 nameof(IMapFrom<,>.MapFrom));
-            
+
             _mappers.TryAdd((sourceType, destType), mapper);
         }
     }
@@ -78,7 +78,7 @@ public class Mapper : IMapper
     private void RegisterIMapFrom3(Type type)
     {
         IEnumerable<Type> interfaces = GetInterfaces(type, typeof(IMapFrom<,,,>));
-        
+
         foreach (var @interface in interfaces)
         {
             var args = @interface.GetGenericArguments();
@@ -95,14 +95,14 @@ public class Mapper : IMapper
                 type,
                 @interface,
                 nameof(IMapFrom<,,,>.MapFrom));
-            
+
             _mappers3.TryAdd((sourceType1, sourceType2, sourceType3, destType), mapper);
         }
     }
 
     private void RegisterIMapWith(Type type)
     {
-        IEnumerable<Type> interfaces = GetInterfaces(type,  typeof(IMapWith<,>));
+        IEnumerable<Type> interfaces = GetInterfaces(type, typeof(IMapWith<,>));
 
         foreach (var @interface in interfaces)
         {
@@ -117,7 +117,7 @@ public class Mapper : IMapper
                 type,
                 @interface,
                 nameof(IMapWith<,>.MapFrom));
-            
+
             _mappers.TryAdd((sourceType, destinationType), mapFromMapper);
 
             // Destination -> Source
@@ -133,7 +133,7 @@ public class Mapper : IMapper
             _mappers.TryAdd((destinationType, sourceType), mapToMapper);
         }
     }
-    
+
 
     private static IEnumerable<Type> GetInterfaces(Type type, Type interfaceType)
     {

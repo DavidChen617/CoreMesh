@@ -49,7 +49,9 @@ public static class DispatchingServiceCollectionExtensions
                            genericDef == typeof(INotificationHandler<>);
                 }).Select(x => new
                 {
-                    Interface = x.iface, Implementation = x.impl, GenericArguments = x.iface.GenericTypeArguments,
+                    Interface = x.iface,
+                    Implementation = x.impl,
+                    GenericArguments = x.iface.GenericTypeArguments,
                 });
 
             foreach (var type in handlers)

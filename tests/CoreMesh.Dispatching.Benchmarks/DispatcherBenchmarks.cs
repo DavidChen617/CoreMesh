@@ -1,8 +1,7 @@
 using BenchmarkDotNet.Attributes;
-using CoreMesh.Dispatching.Notification;
 using CoreMesh.Dispatching.Notification.Publisher;
-using Microsoft.Extensions.DependencyInjection;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Dispatching.Benchmarks;
 

@@ -30,7 +30,7 @@ public sealed class HttpServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        
+
         services.AddCoreMeshHttp();
         services.AddCoreMeshHttp();
 

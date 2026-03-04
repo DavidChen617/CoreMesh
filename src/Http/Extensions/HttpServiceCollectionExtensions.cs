@@ -18,7 +18,7 @@ public static class HttpServiceCollectionExtensions
         public IServiceCollection AddCoreMeshHttp()
         {
             ArgumentNullException.ThrowIfNull(services);
-            
+
             services
                 .AddProblemDetails()
                 .AddExceptionHandler<ValidationExceptionHandler>()
@@ -42,7 +42,7 @@ public static class HttpServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(app);
 
             app.UseExceptionHandler();
-            
+
             return app;
         }
     }

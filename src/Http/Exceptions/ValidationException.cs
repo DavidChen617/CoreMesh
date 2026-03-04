@@ -12,12 +12,12 @@ public sealed class ValidationException : AppException
     /// Gets the grouped validation errors keyed by field name.
     /// </summary>
     public IDictionary<string, string[]> Errors { get; }
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ValidationException"/> class from grouped errors.
     /// </summary>
     /// <param name="errors">The grouped validation errors.</param>
-    public ValidationException(IDictionary<string, string[]> errors):
+    public ValidationException(IDictionary<string, string[]> errors) :
         base("One or more validation errors occurred.", HttpStatusCode.BadRequest)
     {
         ArgumentNullException.ThrowIfNull(errors);

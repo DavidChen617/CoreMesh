@@ -1,6 +1,6 @@
 namespace CoreMesh.Examples.Console.Samples.Interception;
 
-public class MyService: IMyService
+public class MyService : IMyService
 {
     public async Task<List<int>> Add(int a, int b)
     {

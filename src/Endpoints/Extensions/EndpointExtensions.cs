@@ -17,9 +17,9 @@ public static class EndpointExtensions
         /// <returns>The service collection.</returns>
         public IServiceCollection AddEndpoints(params Assembly[] assemblies)
         {
-            if(assemblies.Length == 0)
+            if (assemblies.Length == 0)
                 throw new ArgumentException("At least one assembly must be provided.", nameof(assemblies));
-            
+
             var types = assemblies
                 .SelectMany(t => t.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && !t.IsInterface).ToList();
