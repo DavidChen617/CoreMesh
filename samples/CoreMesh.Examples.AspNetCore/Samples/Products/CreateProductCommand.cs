@@ -1,19 +1,21 @@
 using CoreMesh.Dispatching;
 using CoreMesh.Validation;
+using CoreMesh.Validation.Extensions;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Products;
 
 public sealed record CreateProductCommand(string Name, decimal Price, string Description)
     : IRequest, IValidatable<CreateProductCommand>
 {
-    public void ConfigureRules(ValidationBuilder<CreateProductCommand> builder)
+    public void ConfigureValidateRules(ValidationBuilder<CreateProductCommand> builder)
     {
-        builder.RuleFor(x => x.Name)
+        builder.For(x => x.Name)
             .NotNull()
             .NotEmpty()
-            .Length(2, 50);
+            .MinLength(2)
+            .MaxLength(50);
 
-        builder.RuleFor(x => x.Description)
+        builder.For(x => x.Description)
             .NotNull()
             .NotEmpty();
     }

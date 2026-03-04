@@ -1,41 +1,73 @@
 using System.Collections.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Validation;
 
 /// <summary>
-/// Default validator entry point for a validatable model type.
+/// Default implementation of <see cref="IValidator"/> that validates objects using configured rules.
 /// </summary>
-/// <typeparam name="T">The model type.</typeparam>
-public sealed class Validator<T> : IValidator<T> where T : IValidatable<T>
+/// <remarks>
+/// <para>Rules are cached per type for optimal performance.</para>
+/// <para>Supports two modes:</para>
+/// <list type="bullet">
+///   <item>Model implements <see cref="IValidatable{T}"/> directly</item>
+///   <item>Separate validator class resolved from DI</item>
+/// </list>
+/// </remarks>
+/// <param name="sp">The service provider for resolving <see cref="IValidatable{T}"/> implementations.</param>
+public sealed class Validator(IServiceProvider sp) : IValidator
 {
-    private static readonly ConcurrentDictionary<Type, object> Cache = new();
-    
-    /// <summary>
-    /// Validates the specified instance.
-    /// </summary>
-    /// <param name="instance">The instance to validate.</param>
-    /// <returns>The validation result.</returns>
-    public ValidationResult Validate(T instance) 
+    private readonly ConcurrentDictionary<Type, object> _rulesCache = new();
+
+    /// <inheritdoc />
+    public ValidationResult Validate<T>(T model)
     {
-        ArgumentNullException.ThrowIfNull(instance);
+        if (model is null)
+            throw new ArgumentNullException(nameof(model));
 
-        var objectValidator = (ObjectValidator<T>)Cache.GetOrAdd(typeof(T), _ =>
+        var result = new ValidationResult();
+        var stoppedProperties = new HashSet<string>();
+
+        foreach (var rule in GetRules<T>(model))
         {
-            var builder = new ValidationBuilder<T>();
-            instance.ConfigureRules(builder); 
-            return builder.Build();
-        });
+            var ruleResult = rule(model);
 
-        return objectValidator.Validate(instance);
+            // If the property has been marked as discontinued, subsequent rules are skipped
+            if (stoppedProperties.Contains(ruleResult.PropertyName))
+                continue;
+
+            // If it is a stop mark, check this property to see if there are any errors
+            if (ruleResult.StopOnError)
+            {
+                if (result.Errors.ContainsKey(ruleResult.PropertyName))
+                    stoppedProperties.Add(ruleResult.PropertyName);
+                continue;
+            }
+
+            // Handle errors normally
+            if (ruleResult.ErrorMessage is null)
+                continue;
+
+            if (!result.Errors.TryGetValue(ruleResult.PropertyName, out var list))
+                result.Errors[ruleResult.PropertyName] = list = new List<string>();
+
+            list.Add(ruleResult.ErrorMessage);
+        }
+
+        return result;
     }
 
-    /// <summary>
-    /// Validates the specified instance and throws when validation fails.
-    /// </summary>
-    /// <param name="instance">The instance to validate.</param>
-    /// <param name="message">Optional custom exception message.</param>
-    public void ValidateAndThrow(T instance, string? message = null)
+    private IReadOnlyList<Func<T, RuleResult>> GetRules<T>(T model)
     {
-        Validate(instance).ThrowIfInvalid(message);
+        var rules = (IReadOnlyList<Func<T, RuleResult>>)_rulesCache.GetOrAdd(typeof(T), _ =>
+        {
+            if(model is not IValidatable<T> validatable)
+                 validatable = sp.GetRequiredService<IValidatable<T>>();
+            var b = new ValidationBuilder<T>();
+            validatable.ConfigureValidateRules(b);
+            return b.Build();
+        });
+
+        return rules;
     }
 }
