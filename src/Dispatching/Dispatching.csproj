@@ -10,11 +10,13 @@
 
   <PropertyGroup>
     <PackageId>CoreMesh.Dispatching</PackageId>
-    <Version>0.1.1</Version>
+    <Version>1.0.0</Version>
     <Authors>DavidChen</Authors>
+    <Copyright>Copyright © 2026 DavidChen</Copyright>
     <Description>Lightweight dispatcher/mediator-like library for .NET</Description>
     <PackageTags>dispatcher mediator cqrs coremesh</PackageTags>
     <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/DavidChen617/CoreMesh</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
