@@ -1,109 +1,81 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
-using CoreMesh.Dispatching.Wrappers;
+using CoreMesh.Dispatching.Notification;
+using CoreMesh.Dispatching.Request;
 
 namespace CoreMesh.Dispatching;
 
 /// <summary>
 /// Default dispatcher implementation for request and notification dispatching.
 /// </summary>
-public sealed class Dispatcher(IServiceProvider serviceProvider) : IDispatcher
+/// <param name="sp">The service provider used to resolve handlers.</param>
+/// <param name="publisher">The notification publisher strategy.</param>
+public sealed class Dispatcher(IServiceProvider sp, INotificationPublisher publisher) : IDispatcher
 {
     private static readonly ConcurrentDictionary<Type, RequestHandlerBase> RequestHandlers = new();
-    private static readonly ConcurrentDictionary<Type, NotificationHandlerWrapper> NotificationHandlers = new();
-    private static readonly ConcurrentDictionary<Type, Func<RequestHandlerBase>> RequestFactoryCache = new();
-    private static readonly ConcurrentDictionary<Type, Func<RequestHandlerBase>> VoidRequestFactoryCache = new();
-    private static readonly ConcurrentDictionary<Type, Func<NotificationHandlerWrapper>> NotificationFactoryCache = new();
+    private static readonly ConcurrentDictionary<Type, NotificationHandler> NotificationHandlers = new();
 
-    /// <summary>
-    /// Sends a request that expects a response.
-    /// </summary>
-    /// <typeparam name="TResponse">The response type.</typeparam>
-    /// <param name="request">The request instance.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The handler response.</returns>
-    public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+        where TRequest : IRequest
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var wrapper = (RequestHandlerWrapper<TResponse>)RequestHandlers.GetOrAdd(request.GetType(), static requestType =>
-        {
-            var factory = RequestFactoryCache.GetOrAdd(requestType, static requestType =>
-            {
-                var wrapperType = typeof(RequestHandlerWrapperImpl<,>).MakeGenericType(requestType, typeof(TResponse));
-                return BuildRequestFactory(wrapperType);
-            });
+        var handler = (RequestHandler)RequestHandlers.GetOrAdd(request.GetType(),
+            static requestType => CompileAndCreateInstance<RequestHandlerBase>(
+                typeof(RequestHandlerImpl<>).MakeGenericType(requestType))
+        );
 
-            return factory();
-        });
-
-        return wrapper.Handle(request, serviceProvider, cancellationToken);
+        return handler.Handle(request, sp, cancellationToken);
     }
 
-    /// <summary>
-    /// Sends a request that does not return a response payload.
-    /// </summary>
-    /// <param name="request">The request instance.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task that completes when the handler finishes.</returns>
-    public Task Send(IRequest request, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var wrapper = (RequestHandlerWrapper)RequestHandlers.GetOrAdd(request.GetType(), static requestType =>
-        {
-            var factory = VoidRequestFactoryCache.GetOrAdd(requestType, static requestType =>
-            {
-                var wrapperType = typeof(RequestHandlerWrapperImpl<>).MakeGenericType(requestType);
-                return BuildRequestFactory(wrapperType);
-            });
-            return factory();
-        });
+        var handler = (RequestHandler<TResponse>)RequestHandlers.GetOrAdd(request.GetType(),
+            static requestType => CompileAndCreateInstance<RequestHandlerBase>(
+                typeof(RequestHandlerImpl<,>).MakeGenericType(requestType, typeof(TResponse)))
+        );
 
-        return wrapper.Handle(request, serviceProvider, cancellationToken);
+        return handler.Handle(request, sp, cancellationToken);
     }
 
-    /// <summary>
-    /// Publishes a notification to all registered handlers.
-    /// </summary>
-    /// <param name="notification">The notification instance.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task that completes when all handlers finish.</returns>
-    public Task Publish(INotification notification, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public Task Publish(object notification, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(notification);
+        if (notification is not INotification)
+            throw new ArgumentException("Notification is not of type INotification", nameof(notification));
 
-        var wrapper = NotificationHandlers.GetOrAdd(notification.GetType(), static notificationType =>
-        {
-            var factory = NotificationFactoryCache.GetOrAdd(notificationType, static notificationType =>
-            {
-                var wrapperType = typeof(NotificationHandlerWrapperImpl<>).MakeGenericType(notificationType);
-                return BuildNotificationFactory(wrapperType);
-            });
-
-            return factory();
-        });
-
-        return wrapper.Handle(notification, serviceProvider, cancellationToken);
+        return Publish((INotification)notification, cancellationToken);
     }
 
-    private static Func<RequestHandlerBase> BuildRequestFactory(Type wrapperType)
+    /// <inheritdoc />
+    public Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
+        where TNotification : INotification
     {
-        var ctor = wrapperType.GetConstructor(Type.EmptyTypes) ??
-                    throw new ArgumentException($"No parameterless ctor for {wrapperType.FullName}");
-        var newExpr = Expression.New(ctor);
-        var castExpr = Expression.Convert(newExpr, typeof(RequestHandlerBase));
+        if (notification is null)
+            throw new ArgumentNullException(nameof(notification));
 
-        return Expression.Lambda<Func<RequestHandlerBase>>(castExpr).Compile();
+        var handler = NotificationHandlers.GetOrAdd(
+            notification.GetType(),
+            static notificationType => CompileAndCreateInstance<NotificationHandler>(
+                typeof(NotificationHandlerImpl<>).MakeGenericType(notificationType))
+        );
+
+        return handler.Handle(notification, sp, publisher.Publish, cancellationToken);
     }
 
-    private static Func<NotificationHandlerWrapper> BuildNotificationFactory(Type wrapperType)
+    private static THandlerType CompileAndCreateInstance<THandlerType>(Type wrapperType)
     {
-        var ctor = wrapperType.GetConstructor(Type.EmptyTypes) ??
-                    throw new ArgumentException($"No parameterless ctor for {wrapperType.FullName}");
-        var newExpr = Expression.New(ctor);
-        var castExpr = Expression.Convert(newExpr, typeof(NotificationHandlerWrapper));
+        var ctor = wrapperType.GetConstructor(Type.EmptyTypes)
+                   ?? throw new InvalidOperationException($"No parameterless constructor for {wrapperType}");
+        var cast = Expression.Convert(Expression.New(ctor), typeof(THandlerType));
 
-        return Expression.Lambda<Func<NotificationHandlerWrapper>>(castExpr).Compile();
+        var lambda = Expression.Lambda<Func<THandlerType>>(cast);
+        var expressionTree = lambda.Compile();
+        var instance = expressionTree();
+        return instance;
     }
 }
