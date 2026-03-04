@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 
 namespace CoreMesh.Endpoints;
 
@@ -13,35 +12,6 @@ public interface IEndpoint
     /// </summary>
     /// <param name="app">The route builder.</param>
     void AddRoute(IEndpointRouteBuilder app);
-}
-
-/// <summary>
-/// Defines an endpoint with a request payload that returns an <see cref="IResult"/>.
-/// </summary>
-/// <typeparam name="TRequest">The request type.</typeparam>
-public interface IEndpoint<TRequest> : IEndpoint
-{
-    /// <summary>
-    /// Handles the endpoint request.
-    /// </summary>
-    /// <param name="request">The request payload.</param>
-    /// <returns>The HTTP result.</returns>
-    Task<IResult> HandleAsync(TRequest request);
-}
-
-/// <summary>
-/// Defines an endpoint with a request payload that returns a response payload.
-/// </summary>
-/// <typeparam name="TRequest">The request type.</typeparam>
-/// <typeparam name="TResponse">The response type.</typeparam>
-public interface IEndpoint<TRequest, TResponse> : IEndpoint
-{
-    /// <summary>
-    /// Handles the endpoint request.
-    /// </summary>
-    /// <param name="request">The request payload.</param>
-    /// <returns>The response payload.</returns>
-    Task<TResponse> HandleAsync(TRequest request);
 }
 
 /// <summary>
@@ -85,39 +55,4 @@ public interface IGroupedEndpoint
 public interface IGroupedEndpoint<TGroup> : IGroupedEndpoint where TGroup : IGroupEndpoint
 {
     Type IGroupedEndpoint.GroupType => typeof(TGroup);
-}
-
-/// <summary>
-/// Defines a grouped endpoint with a request payload that returns an <see cref="IResult"/>.
-/// </summary>
-/// <typeparam name="TGroup">The group endpoint type.</typeparam>
-/// <typeparam name="TRequest">The request type.</typeparam>
-public interface IGroupedEndpoint<TGroup, TRequest> : IGroupedEndpoint where TGroup : IGroupEndpoint
-{
-    Type IGroupedEndpoint.GroupType => typeof(TGroup);
-
-    /// <summary>
-    /// Handles the endpoint request.
-    /// </summary>
-    /// <param name="request">The request payload.</param>
-    /// <returns>The HTTP result.</returns>
-    Task<IResult> HandleAsync(TRequest request);
-}
-
-/// <summary>
-/// Defines a grouped endpoint with a request payload that returns a response payload.
-/// </summary>
-/// <typeparam name="TGroup">The group endpoint type.</typeparam>
-/// <typeparam name="TRequest">The request type.</typeparam>
-/// <typeparam name="TResponse">The response type.</typeparam>
-public interface IGroupedEndpoint<TGroup, TRequest, TResponse> : IGroupedEndpoint where TGroup : IGroupEndpoint
-{
-    Type IGroupedEndpoint.GroupType => typeof(TGroup);
-
-    /// <summary>
-    /// Handles the endpoint request.
-    /// </summary>
-    /// <param name="request">The request payload.</param>
-    /// <returns>The response payload.</returns>
-    Task<TResponse> HandleAsync(TRequest request);
 }
