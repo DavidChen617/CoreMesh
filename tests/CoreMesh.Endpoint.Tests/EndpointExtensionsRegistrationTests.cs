@@ -12,7 +12,7 @@ public sealed class EndpointExtensionsRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddEndpoints();
+        services.AddEndpoints([typeof(EndpointExtensionsRegistrationTests).Assembly]);
 
         using var provider = services.BuildServiceProvider();
         var endpoints = provider.GetServices<IEndpoint>().ToList();
@@ -25,7 +25,7 @@ public sealed class EndpointExtensionsRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddEndpoints();
+        services.AddEndpoints([typeof(EndpointExtensionsRegistrationTests).Assembly]);
 
         using var provider = services.BuildServiceProvider();
         var groups = provider.GetServices<IGroupEndpoint>().ToList();
@@ -38,7 +38,7 @@ public sealed class EndpointExtensionsRegistrationTests
     {
         var services = new ServiceCollection();
 
-        services.AddEndpoints();
+        services.AddEndpoints([typeof(EndpointExtensionsRegistrationTests).Assembly]);
 
         using var provider = services.BuildServiceProvider();
         var groupedEndpoints = provider.GetServices<IGroupedEndpoint>().ToList();

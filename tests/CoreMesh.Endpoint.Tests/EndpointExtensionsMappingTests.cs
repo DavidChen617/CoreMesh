@@ -12,7 +12,7 @@ public sealed class EndpointExtensionsMappingTests
         TestRootEndpoint.Reset();
 
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddEndpoints();
+        builder.Services.AddEndpoints([typeof(EndpointExtensionsMappingTests).Assembly]);
 
         var app = builder.Build();
 
@@ -28,8 +28,7 @@ public sealed class EndpointExtensionsMappingTests
         TestGroupedMapEndpoint.Reset();
 
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddEndpoints();
-
+        builder.Services.AddEndpoints([typeof(EndpointExtensionsMappingTests).Assembly]);
         var app = builder.Build();
 
         app.MapEndpoints();
@@ -47,7 +46,7 @@ public sealed class EndpointExtensionsMappingTests
         WrongGroupGroupedEndpoint.Reset();
 
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddEndpoints();
+        builder.Services.AddEndpoints([typeof(EndpointExtensionsMappingTests).Assembly]);
 
         var app = builder.Build();
 

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,38 +15,32 @@ public static class EndpointExtensions
         /// Scans loaded assemblies and registers endpoint implementations in the service collection.
         /// </summary>
         /// <returns>The service collection.</returns>
-        public IServiceCollection AddEndpoints()
+        public IServiceCollection AddEndpoints(params Assembly[] assemblies)
         {
-            var allTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(p => !p.IsInterface && !p.IsAbstract);
+            if(assemblies.Length == 0)
+                throw new ArgumentException("At least one assembly must be provided.", nameof(assemblies));
+            
+            var types = assemblies
+                .SelectMany(t => t.GetTypes())
+                .Where(t => t.IsClass && !t.IsAbstract && !t.IsInterface).ToList();
 
-            var endpoints = allTypes
-                .Where(p => typeof(IEndpoint).IsAssignableFrom(p));
-
-            var groupEndpoints = allTypes
-                .Where(p => typeof(IGroupEndpoint).IsAssignableFrom(p));
-
-            var groupedEndpoints = allTypes
-                .Where(p => p.GetInterfaces().Any(i =>
-                    i.IsGenericType && (
-                        i.GetGenericTypeDefinition() == typeof(IGroupedEndpoint<>)
-                        || i.GetGenericTypeDefinition() == typeof(IGroupedEndpoint<,>)
-                        || i.GetGenericTypeDefinition() == typeof(IGroupedEndpoint<,,>))));
-
-            foreach (var endpoint in endpoints)
-            {
+            foreach (var endpoint in types.Where(t => typeof(IEndpoint).IsAssignableFrom(t)))
                 services.AddSingleton(typeof(IEndpoint), endpoint);
-            }
 
-            foreach (var groupEndpoint in groupEndpoints)
-            {
-                services.AddSingleton(typeof(IGroupEndpoint), groupEndpoint);
-            }
+            var registeredGroups = new HashSet<Type>();
 
-            foreach (var groupedEndpoint in groupedEndpoints)
+            foreach (var groupType in types.Where(t => typeof(IGroupedEndpoint).IsAssignableFrom(t)))
             {
-                services.AddSingleton(typeof(IGroupedEndpoint), groupedEndpoint);
+                services.AddSingleton(typeof(IGroupedEndpoint), groupType);
+
+                var groupImpl = groupType
+                    .GetInterfaces()
+                    .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IGroupedEndpoint<>))?
+                    .GetGenericArguments()
+                    .FirstOrDefault(x => typeof(IGroupEndpoint).IsAssignableFrom(x));
+
+                if (groupImpl is not null && registeredGroups.Add(groupImpl))
+                    services.AddSingleton(typeof(IGroupEndpoint), groupImpl);
             }
 
             return services;
@@ -60,25 +55,24 @@ public static class EndpointExtensions
         /// <returns>The web application.</returns>
         public WebApplication MapEndpoints()
         {
-            var endpoints = app.Services.GetServices<IEndpoint>();
-            var groupEndpoints = app.Services.GetServices<IGroupEndpoint>().ToList();
-            var groupedEndpoints = app.Services.GetServices<IGroupedEndpoint>().ToList();
-
-            foreach (var endpoint in endpoints)
-            {
+            foreach (var endpoint in app.Services.GetServices<IEndpoint>())
                 endpoint.AddRoute(app);
-            }
 
-            foreach (var groupEndpoint in groupEndpoints)
+            var groupMap = app.Services.GetServices<IGroupEndpoint>()
+                .GroupJoin(
+                    app.Services.GetServices<IGroupedEndpoint>(),
+                    parent => parent.GetType(),
+                    child => child.GroupType,
+                    (group, endpoints) => new { Group = group, Endpoints = endpoints }
+                );
+
+            foreach (var groupKv in groupMap)
             {
-                var group = app.MapGroup(groupEndpoint.GroupPrefix);
-                groupEndpoint.Configure(group);
+                var groupBuilder = app.MapGroup(groupKv.Group.GroupPrefix);
+                groupKv.Group.Configure(groupBuilder);
 
-                foreach (var groupedEndpoint in groupedEndpoints.Where(x =>
-                             x.GroupType == groupEndpoint.GetType()))
-                {
-                    groupedEndpoint.AddRoute(group);
-                }
+                foreach (var endpoint in groupKv.Endpoints)
+                    endpoint.AddRoute(groupBuilder);
             }
 
             return app;
