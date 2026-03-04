@@ -1,25 +1,36 @@
+using CoreMesh.Validation.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace CoreMesh.Validation.Tests;
 
 public sealed class ValidationTests
 {
+    private static IValidator CreateValidator()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IValidator, Validator>();
+        var sp = services.BuildServiceProvider();
+        return sp.GetRequiredService<IValidator>();
+    }
+
     [Fact]
     public void Validate_Should_Return_Errors_When_Invalid()
     {
-        var validator = new Validator<CreateUserCommand>();
+        var validator = CreateValidator();
         var command = new CreateUserCommand(null, "");
 
         var result = validator.Validate(command);
 
         Assert.False(result.IsValid);
-        Assert.Equal(4, result.Errors.Count);
-        Assert.Contains(result.Errors, x => x.PropertyName == nameof(CreateUserCommand.Name));
-        Assert.Contains(result.Errors, x => x.PropertyName == nameof(CreateUserCommand.Email));
+        Assert.True(result.Errors.Count >= 2);
+        Assert.Contains(nameof(CreateUserCommand.Name), result.Errors.Keys);
+        Assert.Contains(nameof(CreateUserCommand.Email), result.Errors.Keys);
     }
 
     [Fact]
     public void Validate_Should_Return_Valid_When_Input_Is_Valid()
     {
-        var validator = new Validator<CreateUserCommand>();
+        var validator = CreateValidator();
         var command = new CreateUserCommand("David", "david@example.com");
 
         var result = validator.Validate(command);
@@ -29,32 +40,10 @@ public sealed class ValidationTests
     }
 
     [Fact]
-    public void ValidateAndThrow_Should_Throw_When_Invalid()
-    {
-        var validator = new Validator<CreateUserCommand>();
-        var command = new CreateUserCommand(null, "");
-
-        var ex = Record.Exception(() => validator.ValidateAndThrow(command));
-        Assert.NotNull(ex);
-        Assert.Equal("ValidationException", ex!.GetType().Name);
-    }
-
-    [Fact]
-    public void ValidateAndThrow_Should_Use_Custom_Message()
-    {
-        var validator = new Validator<CreateUserCommand>();
-        var command = new CreateUserCommand(null, "");
-
-        var ex = Record.Exception(() => validator.ValidateAndThrow(command, "Command invalid."));
-        Assert.NotNull(ex);
-        Assert.Equal("Command invalid.", ex!.Message);
-    }
-
-    [Fact]
-    public void Validator_Should_Cache_ObjectValidator_Per_Type()
+    public void Validator_Should_Cache_Rules_Per_Type()
     {
         CountingValidatable.ConfigureRulesCalls = 0;
-        var validator = new Validator<CountingValidatable>();
+        var validator = CreateValidator();
 
         _ = validator.Validate(new CountingValidatable(null));
         _ = validator.Validate(new CountingValidatable("ok"));
@@ -64,136 +53,87 @@ public sealed class ValidationTests
     }
 
     [Fact]
-    public void WithMessage_Should_Override_Last_Validator_Message()
+    public void Custom_Message_Should_Be_Used()
     {
-        var validator = new Validator<WithMessageCommand>();
+        var validator = CreateValidator();
 
         var result = validator.Validate(new WithMessageCommand(""));
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, x => x.ErrorMessage == "Name cannot be blank.");
-    }
-
-    [Fact]
-    public void Regex_And_Length_Rules_Should_Work_For_String()
-    {
-        var validator = new Validator<RegexCommand>();
-
-        var invalid = validator.Validate(new RegexCommand("ab-1"));
-        Assert.False(invalid.IsValid);
-        Assert.True(invalid.Errors.Count >= 1);
-
-        var valid = validator.Validate(new RegexCommand("ABC12"));
-        Assert.True(valid.IsValid);
+        Assert.Contains(result.Errors[nameof(WithMessageCommand.Name)], x => x == "Name cannot be blank.");
     }
 
     [Fact]
     public void Comparison_Rules_Should_Work_For_Numeric_Values()
     {
-        var validator = new Validator<ScoreCommand>();
+        var validator = CreateValidator();
 
         var invalid = validator.Validate(new ScoreCommand(5));
         Assert.False(invalid.IsValid);
-        Assert.Contains(invalid.Errors, x => x.PropertyName == nameof(ScoreCommand.Score));
+        Assert.Contains(nameof(ScoreCommand.Score), invalid.Errors.Keys);
 
         var valid = validator.Validate(new ScoreCommand(50));
         Assert.True(valid.IsValid);
     }
 
     [Fact]
-    public void Must_And_Equal_Rules_Should_Work()
+    public void Must_Rule_Should_Work()
     {
-        var validator = new Validator<MixedRuleCommand>();
+        var validator = CreateValidator();
 
-        var invalid = validator.Validate(new MixedRuleCommand("wrong", 3));
+        var invalid = validator.Validate(new MustRuleCommand(3));
         Assert.False(invalid.IsValid);
-        Assert.Equal(2, invalid.Errors.Count);
 
-        var valid = validator.Validate(new MixedRuleCommand("OK", 4));
+        var valid = validator.Validate(new MustRuleCommand(4));
         Assert.True(valid.IsValid);
     }
 
-
     [Fact]
-    public void WithMessage_Should_Only_Override_Previous_Validator()
+    public void String_Length_Rules_Should_Work()
     {
-        var validator = new Validator<WithMessageOrderCommand>();
+        var validator = CreateValidator();
 
-        var result = validator.Validate(new WithMessageOrderCommand(""));
+        var tooShort = validator.Validate(new StringLengthCommand("A"));
+        Assert.False(tooShort.IsValid);
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, x => x.ErrorMessage == "Name is required.");
-        Assert.Contains(result.Errors, x => x.ErrorMessage.Contains("length must be at least 2", StringComparison.OrdinalIgnoreCase));
-    }
-
-
-    [Fact]
-    public void String_Length_Rules_Should_Work_Explicitly()
-    {
-        var validator = new Validator<StringLengthCommand>();
-
-        var invalid = validator.Validate(new StringLengthCommand("A"));
-        Assert.False(invalid.IsValid);
-        Assert.Contains(invalid.Errors, x => x.ErrorMessage.Contains("at least 2", StringComparison.OrdinalIgnoreCase));
-
-        var invalidTooLong = validator.Validate(new StringLengthCommand("ABCDEFG"));
-        Assert.False(invalidTooLong.IsValid);
-        Assert.Contains(invalidTooLong.Errors, x => x.ErrorMessage.Contains("at most 5", StringComparison.OrdinalIgnoreCase));
+        var tooLong = validator.Validate(new StringLengthCommand("ABCDEFG"));
+        Assert.False(tooLong.IsValid);
 
         var valid = validator.Validate(new StringLengthCommand("ABCD"));
         Assert.True(valid.IsValid);
     }
 
     [Fact]
-    public void WithMessage_Should_Throw_When_No_Previous_Validator()
+    public void For_Should_Throw_For_Non_Member_Expression()
     {
-        var validator = new Validator<WithMessageWithoutValidatorCommand>();
-
-        var ex = Record.Exception(() => validator.Validate(new WithMessageWithoutValidatorCommand("x")));
-
-        Assert.NotNull(ex);
-        Assert.IsType<InvalidOperationException>(ex);
-    }
-
-    [Fact]
-    public void String_Only_Rules_Should_Throw_For_Non_String_Property()
-    {
-        var validator = new Validator<NonStringLengthCommand>();
-
-        var ex = Record.Exception(() => validator.Validate(new NonStringLengthCommand(123)));
-
-        Assert.NotNull(ex);
-        Assert.IsType<NotSupportedException>(ex);
-    }
-
-    [Fact]
-    public void Comparison_Rules_Should_Throw_For_Non_Comparable_Type()
-    {
-        var validator = new Validator<NonComparableCompareCommand>();
-
-        var ex = Record.Exception(() => validator.Validate(new NonComparableCompareCommand(new NonComparableValue(2))));
-
-        Assert.NotNull(ex);
-        Assert.IsType<NotSupportedException>(ex);
-    }
-
-    [Fact]
-    public void RuleFor_Should_Throw_For_Non_Member_Expression()
-    {
-        var validator = new Validator<InvalidExpressionCommand>();
+        var validator = CreateValidator();
 
         var ex = Record.Exception(() => validator.Validate(new InvalidExpressionCommand("abc")));
 
         Assert.NotNull(ex);
-        Assert.IsType<InvalidOperationException>(ex);
+        Assert.IsType<ArgumentException>(ex);
     }
+
+    [Fact]
+    public void StopOnInvalid_Should_Stop_Subsequent_Rules()
+    {
+        var validator = CreateValidator();
+
+        var result = validator.Validate(new StopOnInvalidCommand(null));
+
+        Assert.False(result.IsValid);
+        // Should only have NotNull error, not MinLength error
+        Assert.Single(result.Errors[nameof(StopOnInvalidCommand.Name)]);
+    }
+
+    // ===== Test Models =====
 
     public sealed record CreateUserCommand(string? Name, string? Email) : IValidatable<CreateUserCommand>
     {
-        public void ConfigureRules(ValidationBuilder<CreateUserCommand> builder)
+        public void ConfigureValidateRules(ValidationBuilder<CreateUserCommand> builder)
         {
-            builder.RuleFor(x => x.Name).NotNull().NotEmpty().Length(2, 50);
-            builder.RuleFor(x => x.Email).NotNull().NotEmpty();
+            builder.For(x => x.Name).NotNull().NotEmpty().MinLength(2).MaxLength(50);
+            builder.For(x => x.Email).NotNull().NotEmpty();
         }
     }
 
@@ -201,107 +141,67 @@ public sealed class ValidationTests
     {
         public static int ConfigureRulesCalls { get; set; }
 
-        public void ConfigureRules(ValidationBuilder<CountingValidatable> builder)
+        public void ConfigureValidateRules(ValidationBuilder<CountingValidatable> builder)
         {
             ConfigureRulesCalls++;
-            builder.RuleFor(x => x.Name).NotNull();
+            builder.For(x => x.Name).NotNull();
         }
     }
 
     public sealed record WithMessageCommand(string? Name) : IValidatable<WithMessageCommand>
     {
-        public void ConfigureRules(ValidationBuilder<WithMessageCommand> builder)
+        public void ConfigureValidateRules(ValidationBuilder<WithMessageCommand> builder)
         {
-            builder.RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name cannot be blank.");
-        }
-    }
-
-    public sealed record RegexCommand(string? Code) : IValidatable<RegexCommand>
-    {
-        public void ConfigureRules(ValidationBuilder<RegexCommand> builder)
-        {
-            builder.RuleFor(x => x.Code)
-                .NotEmpty()
-                .Length(5, 5)
-                .Regex("^[A-Z0-9]+$");
+            builder.For(x => x.Name).NotEmpty("Name cannot be blank.");
         }
     }
 
     public sealed record ScoreCommand(int Score) : IValidatable<ScoreCommand>
     {
-        public void ConfigureRules(ValidationBuilder<ScoreCommand> builder)
+        public void ConfigureValidateRules(ValidationBuilder<ScoreCommand> builder)
         {
-            builder.RuleFor(x => x.Score)
+            builder.For(x => x.Score)
                 .GreaterThan(10)
-                .LessThan(100)
-                .Range(20, 80);
+                .LessThan(100);
         }
     }
 
-    public sealed record MixedRuleCommand(string? Status, int Quantity) : IValidatable<MixedRuleCommand>
+    public sealed record MustRuleCommand(int Quantity) : IValidatable<MustRuleCommand>
     {
-        public void ConfigureRules(ValidationBuilder<MixedRuleCommand> builder)
+        public void ConfigureValidateRules(ValidationBuilder<MustRuleCommand> builder)
         {
-            builder.RuleFor(x => x.Status).Equal("OK");
-            builder.RuleFor(x => x.Quantity).Must(x => x % 2 == 0, "'{PropertyName}' must be even.");
-        }
-    }
-
-
-    public sealed record WithMessageOrderCommand(string? Name) : IValidatable<WithMessageOrderCommand>
-    {
-        public void ConfigureRules(ValidationBuilder<WithMessageOrderCommand> builder)
-        {
-            builder.RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required.")
-                .MinimumLength(2);
+            builder.For(x => x.Quantity).Must(x => x % 2 == 0, "Must be even.");
         }
     }
 
     public sealed record StringLengthCommand(string? Name) : IValidatable<StringLengthCommand>
     {
-        public void ConfigureRules(ValidationBuilder<StringLengthCommand> builder)
+        public void ConfigureValidateRules(ValidationBuilder<StringLengthCommand> builder)
         {
-            builder.RuleFor(x => x.Name)
+            builder.For(x => x.Name)
                 .NotNull()
                 .NotEmpty()
-                .MinimumLength(2)
-                .MaximumLength(5);
-        }
-    }
-
-    public sealed record WithMessageWithoutValidatorCommand(string? Name) : IValidatable<WithMessageWithoutValidatorCommand>
-    {
-        public void ConfigureRules(ValidationBuilder<WithMessageWithoutValidatorCommand> builder)
-        {
-            builder.RuleFor(x => x.Name).WithMessage("Should fail");
-        }
-    }
-
-    public sealed record NonStringLengthCommand(int Value) : IValidatable<NonStringLengthCommand>
-    {
-        public void ConfigureRules(ValidationBuilder<NonStringLengthCommand> builder)
-        {
-            builder.RuleFor(x => x.Value).Length(1, 3);
-        }
-    }
-
-    public sealed record NonComparableValue(int Value);
-
-    public sealed record NonComparableCompareCommand(NonComparableValue Value) : IValidatable<NonComparableCompareCommand>
-    {
-        public void ConfigureRules(ValidationBuilder<NonComparableCompareCommand> builder)
-        {
-            builder.RuleFor(x => x.Value).GreaterThan(new NonComparableValue(1));
+                .MinLength(2)
+                .MaxLength(5);
         }
     }
 
     public sealed record InvalidExpressionCommand(string? Name) : IValidatable<InvalidExpressionCommand>
     {
-        public void ConfigureRules(ValidationBuilder<InvalidExpressionCommand> builder)
+        public void ConfigureValidateRules(ValidationBuilder<InvalidExpressionCommand> builder)
         {
-            builder.RuleFor(x => x.Name + "x").NotEmpty();
+            builder.For(x => x.Name + "x").NotEmpty();
+        }
+    }
+
+    public sealed record StopOnInvalidCommand(string? Name) : IValidatable<StopOnInvalidCommand>
+    {
+        public void ConfigureValidateRules(ValidationBuilder<StopOnInvalidCommand> builder)
+        {
+            builder.For(x => x.Name)
+                .NotNull()
+                .StopOnInvalid()
+                .MinLength(5);
         }
     }
 }

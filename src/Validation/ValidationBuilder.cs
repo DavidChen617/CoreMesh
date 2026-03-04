@@ -3,54 +3,35 @@ using System.Linq.Expressions;
 namespace CoreMesh.Validation;
 
 /// <summary>
-/// Builds validation rules for a model type.
+/// Provides a fluent API for building validation rules for type <typeparamref name="T"/>.
 /// </summary>
-/// <typeparam name="T">The model type.</typeparam>
-public sealed class ValidationBuilder<T>
+/// <typeparam name="T">The type being validated.</typeparam>
+public class ValidationBuilder<T>
 {
-    private readonly List<IValidationRule<T>> _rules = [];
+    private readonly List<Func<T, RuleResult>> _rules = new();
+
+    internal IReadOnlyList<Func<T, RuleResult>> Build() => _rules;
 
     /// <summary>
-    /// Creates a rule builder for a model property.
+    /// Starts building validation rules for the specified property.
     /// </summary>
-    /// <typeparam name="TProperty">The property type.</typeparam>
-    /// <param name="expression">The property access expression.</param>
-    /// <returns>A fluent rule builder for the property.</returns>
-    public RuleBuilder<T, TProperty> RuleFor<TProperty>(Expression<Func<T, TProperty>> expression)
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    /// <param name="expression">A lambda expression that identifies the property to validate.</param>
+    /// <returns>A <see cref="PropertyRuleBuilder{T, TProperty}"/> for chaining validation rules.</returns>
+    /// <exception cref="ArgumentException">Thrown when the expression is not a member expression.</exception>
+    public PropertyRuleBuilder<T, TProperty> For<TProperty>(Expression<Func<T, TProperty>> expression)
     {
-        ArgumentNullException.ThrowIfNull(expression);
-        
-        var propertyName = GetPropertyName(expression);
-        var propertyFunc = expression.Compile();
-        
-        var rule = new PropertyRule<T, TProperty>(propertyName, propertyFunc);
-        AddRule(rule);
+        Expression body = expression.Body;
 
-        return new RuleBuilder<T, TProperty>(rule);
-    }
+        if (body is UnaryExpression u && u.NodeType == ExpressionType.Convert)
+            body = u.Operand;
 
-    /// <summary>
-    /// Builds an executable validator from the configured rules.
-    /// </summary>
-    /// <returns>The object validator.</returns>
-    public ObjectValidator<T> Build()
-    {
-        return new ObjectValidator<T>(_rules.ToArray());
-    }
+        if (body is not MemberExpression member)
+            throw new ArgumentException("Expression must be a member expression.", nameof(expression));
 
-    internal void AddRule(IValidationRule<T> rule)
-    {
-        ArgumentNullException.ThrowIfNull(rule);
-        _rules.Add(rule);
-    }
-    
-    private static string GetPropertyName<TProperty>(Expression<Func<T, TProperty>> expression)
-    {
-        if (expression.Body is MemberExpression member)
-        {
-            return member.Member.Name;
-        }
+        var name = member.Member.Name;
+        var getter = expression.Compile();
 
-        throw new InvalidOperationException("RuleFor only supports simple member access expressions.");
+        return new PropertyRuleBuilder<T, TProperty>(_rules, name, getter);
     }
 }

@@ -1,22 +1,15 @@
 namespace CoreMesh.Validation;
 
 /// <summary>
-/// Provides validation operations for a specific validatable model type.
+/// Defines the contract for a validator that can validate objects.
 /// </summary>
-/// <typeparam name="T">The model type.</typeparam>
-public interface IValidator<T> where T : IValidatable<T>
+public interface IValidator
 {
     /// <summary>
-    /// Validates the specified instance and returns the validation result.
+    /// Validates the specified model.
     /// </summary>
-    /// <param name="instance">The instance to validate.</param>
-    /// <returns>The validation result.</returns>
-    ValidationResult Validate(T instance);
-
-    /// <summary>
-    /// Validates the specified instance and throws when validation fails.
-    /// </summary>
-    /// <param name="instance">The instance to validate.</param>
-    /// <param name="message">Optional custom exception message.</param>
-    void ValidateAndThrow(T instance, string? message = null);
+    /// <typeparam name="T">The type of the model to validate.</typeparam>
+    /// <param name="model">The model instance to validate.</param>
+    /// <returns>A <see cref="ValidationResult"/> containing the validation outcome.</returns>
+    ValidationResult Validate<T>(T model);
 }

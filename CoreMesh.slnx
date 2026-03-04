@@ -20,6 +20,7 @@
     <Project Path="tests/CoreMesh.Interceptions.Tests/CoreMesh.Interceptions.Tests.csproj" />
     <Project Path="tests/CoreMesh.Mapper.Benchmarks/CoreMesh.Mapper.Benchmarks.csproj" />
     <Project Path="tests/CoreMesh.Mapper.Tests/CoreMesh.Mapper.Tests.csproj" />
+    <Project Path="tests/CoreMesh.Validation.Benchmarks/CoreMesh.Validation.Benchmarks.csproj" />
     <Project Path="tests/CoreMesh.Validation.Tests/CoreMesh.Validation.Tests.csproj" />
   </Folder>
 </Solution>
