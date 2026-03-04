@@ -8,15 +8,13 @@ namespace CoreMesh.Dispatching.Extensions;
 /// </summary>
 public sealed class DispatchingOptions
 {
-    private Type _notificationPublisherType = typeof(ForeachAwaitPublisher);
-
     /// <summary>
     /// Gets or sets the type of <see cref="INotificationPublisher"/> to use.
     /// Defaults to <see cref="ForeachAwaitPublisher"/>.
     /// </summary>
     public Type NotificationPublisherType
     {
-        get => _notificationPublisherType;
+        get;
         set
         {
             if (!typeof(INotificationPublisher).IsAssignableFrom(value))
@@ -24,9 +22,9 @@ public sealed class DispatchingOptions
                     $"Type {value.FullName} must implement {nameof(INotificationPublisher)}",
                     nameof(value));
 
-            _notificationPublisherType = value;
+            field = value;
         }
-    }
+    } = typeof(ForeachAwaitPublisher);
 
     /// <summary>
     /// Sets the notification publisher to execute handlers sequentially (one at a time).
@@ -40,7 +38,7 @@ public sealed class DispatchingOptions
     }
 
     /// <summary>
-    /// Sets the notification publisher to execute handlers in parallel using <see cref="Task.WhenAll"/>.
+    /// Sets the notification publisher to execute handlers in parallel using <see cref="Task.WhenAll(IEnumerable{Task})"/>.
     /// </summary>
     /// <returns>The options instance for chaining.</returns>
     public DispatchingOptions UseParallelPublisher()
