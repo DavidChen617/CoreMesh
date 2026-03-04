@@ -1,15 +1,16 @@
 using CoreMesh.Dispatching;
 using CoreMesh.Mapper;
 using CoreMesh.Validation;
+using CoreMesh.Validation.Extensions;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Queries;
 
 public sealed record SampleQuery(string Foo, string Bar) : IRequest<SampleResponse>, IValidatable<SampleQuery>
 {
-    public void ConfigureRules(ValidationBuilder<SampleQuery> builder)
+    public void ConfigureValidateRules(ValidationBuilder<SampleQuery> builder)
     {
-        builder.RuleFor(query => query.Foo).NotEmpty().NotNull().WithMessage("Foo is required");
-        builder.RuleFor(query => query.Bar).NotEmpty().NotNull().WithMessage("Bar is required");
+        builder.For(query => query.Foo).NotEmpty("Foo is required").NotNull("Foo is required");
+        builder.For(query => query.Bar).NotEmpty("Bar is required").NotNull("Bar is required");
     }
 }
 
@@ -35,17 +36,19 @@ public class SampleEntity
     public string Bar { get; set; } = string.Empty;
 }
 
-public sealed class SampleHandler(IMapper mapper, IValidator<SampleQuery> validator) : IRequestHandler<SampleQuery, SampleResponse>
+public sealed class SampleHandler(IMapper mapper, IValidator validator) : IRequestHandler<SampleQuery, SampleResponse>
 {
     public Task<SampleResponse> Handle(
         SampleQuery request,
         CancellationToken cancellationToken = default
         )
     {
-        validator.ValidateAndThrow(request);
-        
+        var result = validator.Validate(request);
+        if (!result.IsValid)
+            throw new InvalidOperationException("Validation failed: " + string.Join(", ", result.Errors.SelectMany(e => e.Value)));
+
         var sample = new SampleEntity { Id = "123", Foo = request.Foo, Bar = request.Bar };
-        
+
         return Task.FromResult(mapper.Map<SampleEntity, SampleResponse>(sample));
     }
 }
