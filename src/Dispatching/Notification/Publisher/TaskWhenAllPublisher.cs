@@ -1,7 +1,7 @@
 namespace CoreMesh.Dispatching.Notification.Publisher;
 
 /// <summary>
-/// Publishes notifications to all handlers in parallel using <see cref="Task.WhenAll"/>.
+/// Publishes notifications to all handlers in parallel using <see cref="Task.WhenAll(IEnumerable{Task})"/>.
 /// If multiple handlers throw exceptions, an <see cref="AggregateException"/> is thrown.
 /// </summary>
 public class TaskWhenAllPublisher : INotificationPublisher
