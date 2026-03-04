@@ -61,8 +61,8 @@ public sealed class Validator(IServiceProvider sp) : IValidator
     {
         var rules = (IReadOnlyList<Func<T, RuleResult>>)_rulesCache.GetOrAdd(typeof(T), _ =>
         {
-            if(model is not IValidatable<T> validatable)
-                 validatable = sp.GetRequiredService<IValidatable<T>>();
+            if (model is not IValidatable<T> validatable)
+                validatable = sp.GetRequiredService<IValidatable<T>>();
             var b = new ValidationBuilder<T>();
             validatable.ConfigureValidateRules(b);
             return b.Build();

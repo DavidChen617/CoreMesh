@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using CoreMesh.Examples.Console;
+﻿using CoreMesh.Examples.Console;
 using CoreMesh.Examples.Console.Samples.Interception;
 using CoreMesh.Interception.Extensions;
 using CoreMesh.Mapper;
@@ -31,7 +30,7 @@ var singleUser = new User()
 var singleUserDto = mapper.Map<User, UserDto>(singleUser);
 // Console.WriteLine(JsonSerializer.Serialize(singleUserDto));
 
-var users =  new List<User>();
+var users = new List<User>();
 
 for (int i = 0; i < 10; i++)
 {
@@ -48,7 +47,7 @@ for (int i = 0; i < 10; i++)
 var dtos = mapper.Map<User, UserDto>(users);
 // Console.WriteLine($"Dtos: {JsonSerializer.Serialize(dtos)}");
 
-var revertToUser  = mapper.Map<UserDto, User>(singleUserDto);
+var revertToUser = mapper.Map<UserDto, User>(singleUserDto);
 // Console.WriteLine($" revertToUser {JsonSerializer.Serialize(revertToUser)}");
 
 var revertToUsers = mapper.Map<UserDto, User>(dtos);

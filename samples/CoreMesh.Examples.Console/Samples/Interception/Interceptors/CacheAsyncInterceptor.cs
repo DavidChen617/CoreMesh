@@ -3,7 +3,7 @@ using CoreMesh.Interception;
 
 namespace CoreMesh.Examples.Console.Samples.Interception.Interceptors;
 
-public class CacheAsyncInterceptor:  IAsyncInterceptor
+public class CacheAsyncInterceptor : IAsyncInterceptor
 {
     public ValueTask BeforeInvoke(MethodInfo method, object?[]? args)
     {

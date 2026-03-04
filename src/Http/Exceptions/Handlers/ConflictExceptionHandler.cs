@@ -29,7 +29,7 @@ public sealed class ConflictExceptionHandler(ILogger<ConflictExceptionHandler> l
 
         const int statusCode = StatusCodes.Status409Conflict;
         httpContext.Response.StatusCode = statusCode;
-        
+
         var problem = new ProblemDetails
         {
             Status = statusCode,

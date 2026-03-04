@@ -16,8 +16,8 @@ public static class InterceptorExtension
                 yield return attr;
 
             foreach (var parentInterface in type.GetInterfaces())
-            foreach (var attr in parentInterface.GetCustomAttributes())
-                yield return attr;
+                foreach (var attr in parentInterface.GetCustomAttributes())
+                    yield return attr;
         }
     }
 

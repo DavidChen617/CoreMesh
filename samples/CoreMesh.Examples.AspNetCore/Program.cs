@@ -1,9 +1,9 @@
 using Asp.Versioning;
 using CoreMesh.Dispatching.Extensions;
 using CoreMesh.Endpoints.Extensions;
+using CoreMesh.Http.Extensions;
 using CoreMesh.Mapper.Extensions;
 using CoreMesh.Validation.Extensions;
-using CoreMesh.Http.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services

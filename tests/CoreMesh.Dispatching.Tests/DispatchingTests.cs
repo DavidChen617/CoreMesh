@@ -11,7 +11,7 @@ public class DispatchingTests
     public async Task Send_Should_Return_Response()
     {
         var services = new ServiceCollection();
-        
+
         services.AddDispatching([typeof(DispatchingTests).Assembly]);
         using var provider = services.BuildServiceProvider();
         var dispatcher = provider.GetRequiredService<IDispatcher>();

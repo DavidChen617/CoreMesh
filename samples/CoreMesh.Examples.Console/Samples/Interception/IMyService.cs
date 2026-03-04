@@ -3,7 +3,7 @@ using CoreMesh.Interception;
 
 namespace CoreMesh.Examples.Console.Samples.Interception;
 
-public interface IMyService: IInterceptable
+public interface IMyService : IInterceptable
 {
     Task<List<int>> Add(int a, int b);
 }

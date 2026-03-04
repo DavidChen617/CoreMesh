@@ -3,7 +3,7 @@ using CoreMesh.Interception;
 
 namespace CoreMesh.Examples.Console.Samples.Interception.Interceptors;
 
-public class LoggingInterceptor: IInterceptor
+public class LoggingInterceptor : IInterceptor
 {
     public void BeforeInvoke(MethodInfo method, object?[]? args)
     {

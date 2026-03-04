@@ -11,7 +11,7 @@ public class ApiResponse
     /// <summary>
     /// Gets a value indicating whether the operation succeeded.
     /// </summary>
-    [JsonPropertyName("isSuccess")] 
+    [JsonPropertyName("isSuccess")]
     public bool IsSuccess { get; init; }
 
     /// <summary>
@@ -24,7 +24,7 @@ public class ApiResponse
     /// <summary>
     /// Gets the application-specific response code.
     /// </summary>
-    [JsonPropertyName("code")] 
+    [JsonPropertyName("code")]
     public string Code { get; init; } = string.Empty;
 
     /// <summary>
@@ -36,11 +36,11 @@ public class ApiResponse
     public static ApiResponse OnFailure(ProblemDetails problem, string code)
         => new()
         {
-            IsSuccess = false, 
-            Problem = problem, 
+            IsSuccess = false,
+            Problem = problem,
             Code = code
         };
-    
+
     /// <summary>
     /// Creates a success response envelope.
     /// </summary>

@@ -14,7 +14,7 @@ public sealed record SampleQuery(string Foo, string Bar) : IRequest<SampleRespon
     }
 }
 
-public sealed record SampleResponse(string Foo, string Bar): IMapWith<SampleEntity, SampleResponse>
+public sealed record SampleResponse(string Foo, string Bar) : IMapWith<SampleEntity, SampleResponse>
 {
     public SampleResponse() : this(string.Empty, string.Empty) { }
 
@@ -25,7 +25,7 @@ public sealed record SampleResponse(string Foo, string Bar): IMapWith<SampleEnti
 
     public SampleEntity MapTo()
     {
-        return new (){ Foo = Foo, Bar = Bar };
+        return new() { Foo = Foo, Bar = Bar };
     }
 };
 

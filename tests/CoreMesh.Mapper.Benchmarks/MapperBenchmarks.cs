@@ -1,5 +1,5 @@
-using BenchmarkDotNet.Attributes;
 using AutoMapper;
+using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CoreMesh.Mapper.Benchmarks;
