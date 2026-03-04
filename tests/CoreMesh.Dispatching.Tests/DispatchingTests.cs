@@ -1,3 +1,6 @@
+using CoreMesh.Dispatching.Extensions;
+using CoreMesh.Dispatching.Notification;
+using CoreMesh.Dispatching.Notification.Publisher;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Dispatching.Tests;
@@ -8,9 +11,8 @@ public class DispatchingTests
     public async Task Send_Should_Return_Response()
     {
         var services = new ServiceCollection();
-        services.AddScoped<IDispatcher, Dispatcher>();
-        services.AddScoped<IRequestHandler<PingQuery, PingResponse>, PingHandler>();
-
+        
+        services.AddDispatching([typeof(DispatchingTests).Assembly]);
         using var provider = services.BuildServiceProvider();
         var dispatcher = provider.GetRequiredService<IDispatcher>();
 
@@ -23,13 +25,16 @@ public class DispatchingTests
     public async Task Send_Should_Throw_When_Handler_Not_Registered()
     {
         var services = new ServiceCollection();
+        services.AddSingleton<INotificationPublisher, ForeachAwaitPublisher>();
         services.AddScoped<IDispatcher, Dispatcher>();
+        // 不註冊 UnregisteredQuery 的 handler
 
         using var provider = services.BuildServiceProvider();
+
         var dispatcher = provider.GetRequiredService<IDispatcher>();
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            dispatcher.Send(new PingQuery("foo"), CancellationToken.None));
+            dispatcher.Send(new UnregisteredQuery("foo"), CancellationToken.None));
     }
 
     [Fact]
@@ -38,6 +43,7 @@ public class DispatchingTests
         var calls = new List<string>();
 
         var services = new ServiceCollection();
+        services.AddSingleton<INotificationPublisher, ForeachAwaitPublisher>();
         services.AddScoped<IDispatcher, Dispatcher>();
         services.AddSingleton(calls);
 
@@ -70,7 +76,11 @@ public class DispatchingTests
 
     public sealed record PingResponse(string Value);
 
-    public sealed class PingHandler : IRequestHandler<PingQuery, PingResponse>
+    private sealed record UnregisteredQuery(string Value) : IRequest<UnregisteredResponse>;
+
+    private sealed record UnregisteredResponse(string Value);
+
+    private sealed class PingHandler : IRequestHandler<PingQuery, PingResponse>
     {
         public Task<PingResponse> Handle(PingQuery request, CancellationToken cancellationToken = default)
             => Task.FromResult(new PingResponse(request.Value));

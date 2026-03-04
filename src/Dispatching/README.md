@@ -19,6 +19,7 @@ Design goals:
 
 - `Dispatcher` uses wrapper + cache (lazy loading)
 - Notifications are executed sequentially by default (safety-first)
+- Configurable notification publisher strategy (sequential / parallel)
 - Supports `Microsoft.Extensions.DependencyInjection` registration and assembly scanning
 - No pipeline (intentionally excluded)
 
@@ -30,7 +31,9 @@ Design goals:
 - `IRequestHandler<TRequest>`
 - `INotification`: event/notification
 - `INotificationHandler<TNotification>`
-- `IDispatcher`
+- `ISender`: request sending entry point
+- `IPublisher`: notification publishing entry point
+- `IDispatcher`: combines `ISender` and `IPublisher`
 
 ## Quick Start
 
@@ -53,7 +56,7 @@ public sealed class SampleHandler : IRequestHandler<SampleQuery, SampleResponse>
 ### 2. Register Dispatcher and handlers
 
 ```csharp
-using CoreMesh.Dispatching;
+using CoreMesh.Dispatching.Extensions;
 
 builder.Services.AddDispatching(typeof(SampleHandler).Assembly);
 ```
@@ -61,6 +64,10 @@ builder.Services.AddDispatching(typeof(SampleHandler).Assembly);
 Or register manually:
 
 ```csharp
+using CoreMesh.Dispatching.Notification;
+using CoreMesh.Dispatching.Notification.Publisher;
+
+builder.Services.AddSingleton<INotificationPublisher, ForeachAwaitPublisher>();
 builder.Services.AddScoped<IDispatcher, Dispatcher>();
 builder.Services.AddScoped<IRequestHandler<SampleQuery, SampleResponse>, SampleHandler>();
 ```
@@ -125,8 +132,15 @@ await dispatcher.Publish(new UserCreated(123, "demo@coremesh.dev"), ct);
 ### Publish
 
 - `Publish(INotification)` dispatches to all matching `INotificationHandler<T>`
-- Execution is **sequential** (in registration order)
+- Execution is **sequential** by default (in registration order)
 - This is safer when handlers share scoped dependencies
+- Can be configured to run in **parallel** for better throughput:
+
+```csharp
+builder.Services.AddDispatching(
+    options => options.UseParallelPublisher(),
+    typeof(Program).Assembly);
+```
 
 ## Use Cases (When This Pattern Fits)
 
@@ -205,13 +219,28 @@ Cross-cutting concerns such as validation, logging, or proxy behavior can be han
 
 ## Notes
 
+- `AddDispatching()` requires at least one assembly parameter
 - Prefer explicit assembly scanning (for example `typeof(SomeHandler).Assembly`)
-- `AddDispatching()` without parameters scans currently loaded assemblies (higher startup cost)
 - A request type should correspond to a single response type (`IRequest<TResponse>`)
+
+## Performance
+
+Benchmarks comparing CoreMesh.Dispatching with MediatR 12.x (last free MIT version):
+
+| Method                     | Mean      | Allocated |
+|--------------------------- |----------:|----------:|
+| Baseline (Direct Handler)  |  10.97 ns |     104 B |
+| CoreMesh Send              |  27.55 ns |     104 B |
+| MediatR Send               |  50.20 ns |     232 B |
+| CoreMesh Publish (1)       |  59.29 ns |     232 B |
+| MediatR Publish (1)        |  68.73 ns |     288 B |
+| CoreMesh Publish (5)       | 143.98 ns |     712 B |
+| MediatR Publish (5)        | 166.18 ns |     896 B |
+
+CoreMesh is ~45% faster on Send and ~15-20% faster on Publish, with ~20-55% less memory allocation.
 
 ## Future Directions
 
 - `AddDispatchingFromAssemblyContaining<T>()`
 - More DI registration options (lifetime / filters)
-- Configurable notification publisher strategies (sequential / parallel)
 - Source generator support to further reduce runtime type-resolution overhead
