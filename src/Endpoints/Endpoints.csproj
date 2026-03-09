@@ -7,6 +7,22 @@
     <RootNamespace>CoreMesh.Endpoints</RootNamespace>
     <AssemblyName>CoreMesh.Endpoints</AssemblyName>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <PackageId>CoreMesh.Endpoints</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>DavidChen</Authors>
+    <Description>Lightweight Endpoint library for .NET</Description>
+    <PackageTags>Endpoint coremesh</PackageTags>
+    <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
