@@ -1,4 +1,5 @@
 using CoreMesh.Dispatching;
+using CoreMesh.Dispatching.Abstractions;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Users;
 

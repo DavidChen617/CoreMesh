@@ -1,3 +1,4 @@
+using CoreMesh.Dispatching.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Dispatching.Notification;

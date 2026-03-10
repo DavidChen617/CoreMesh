@@ -1,4 +1,5 @@
 using CoreMesh.Dispatching;
+using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Endpoints;
 using CoreMesh.Examples.AspNetCore.Samples.Products;
 using CoreMesh.Http.Responses;
