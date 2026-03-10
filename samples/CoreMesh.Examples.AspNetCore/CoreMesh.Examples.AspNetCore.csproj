@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\src\Mapper\Mapper.csproj" />
     <ProjectReference Include="..\..\src\Validation\Validation.csproj" />
     <ProjectReference Include="..\..\src\Http\Http.csproj" />
+    <ProjectReference Include="..\..\src\Result\Result.csproj" />
   </ItemGroup>
 
 </Project>
