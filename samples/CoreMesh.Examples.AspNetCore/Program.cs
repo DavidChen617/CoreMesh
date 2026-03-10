@@ -1,7 +1,6 @@
 using Asp.Versioning;
 using CoreMesh.Dispatching.Extensions;
 using CoreMesh.Endpoints.Extensions;
-using CoreMesh.Http.Extensions;
 using CoreMesh.Mapper.Extensions;
 using CoreMesh.Result;
 using CoreMesh.Result.Extensions;
