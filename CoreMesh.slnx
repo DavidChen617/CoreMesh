@@ -10,6 +10,7 @@
     <Project Path="src/Interception/Interception.csproj" />
     <Project Path="src/Logging/Logging.csproj" />
     <Project Path="src/Mapper/Mapper.csproj" />
+    <Project Path="src/Result/Result.csproj" />
     <Project Path="src/Validation/Validation.csproj" />
   </Folder>
   <Folder Name="/tests/">
@@ -21,6 +22,7 @@
     <Project Path="tests/CoreMesh.Interceptions.Tests/CoreMesh.Interceptions.Tests.csproj" />
     <Project Path="tests/CoreMesh.Mapper.Benchmarks/CoreMesh.Mapper.Benchmarks.csproj" />
     <Project Path="tests/CoreMesh.Mapper.Tests/CoreMesh.Mapper.Tests.csproj" />
+    <Project Path="tests/CoreMesh.Result.Tests/CoreMesh.Result.Tests.csproj" />
     <Project Path="tests/CoreMesh.Validation.Benchmarks/CoreMesh.Validation.Benchmarks.csproj" />
     <Project Path="tests/CoreMesh.Validation.Tests/CoreMesh.Validation.Tests.csproj" />
   </Folder>
