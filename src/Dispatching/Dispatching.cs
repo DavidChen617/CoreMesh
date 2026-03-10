@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
+using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Dispatching.Notification;
 using CoreMesh.Dispatching.Request;
 
