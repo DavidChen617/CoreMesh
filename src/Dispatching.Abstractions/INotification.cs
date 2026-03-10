@@ -1,4 +1,4 @@
-namespace CoreMesh.Dispatching;
+namespace CoreMesh.Dispatching.Abstractions;
 
 /// <summary>
 /// Represents a notification that can be handled by multiple handlers.

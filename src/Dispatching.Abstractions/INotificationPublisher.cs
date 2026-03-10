@@ -1,4 +1,4 @@
-namespace CoreMesh.Dispatching.Notification;
+namespace CoreMesh.Dispatching.Abstractions;
 
 /// <summary>
 /// Defines the strategy for publishing notifications to multiple handlers.

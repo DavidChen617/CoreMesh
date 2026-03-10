@@ -1,4 +1,4 @@
-namespace CoreMesh.Dispatching.Notification;
+namespace CoreMesh.Dispatching.Abstractions;
 
 /// <summary>
 /// Wraps a notification handler instance and its invocation callback.

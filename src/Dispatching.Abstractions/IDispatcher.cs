@@ -1,4 +1,4 @@
-namespace CoreMesh.Dispatching;
+namespace CoreMesh.Dispatching.Abstractions;
 
 /// <summary>
 /// Defines the combined request sending and notification publishing entry point.
