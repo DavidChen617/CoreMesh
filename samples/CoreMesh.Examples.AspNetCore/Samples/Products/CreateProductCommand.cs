@@ -1,5 +1,7 @@
 using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Validation;
+using CoreMesh.Validation.Abstractions;
+using CoreMesh.Validation.Abstractions.Extensions;
 using CoreMesh.Validation.Extensions;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Products;
@@ -7,7 +9,7 @@ namespace CoreMesh.Examples.AspNetCore.Samples.Products;
 public sealed record CreateProductCommand(string Name, decimal Price, string Description)
     : IRequest, IValidatable<CreateProductCommand>
 {
-    public void ConfigureValidateRules(ValidationBuilder<CreateProductCommand> builder)
+    public void ConfigureValidateRules(IValidationBuilder<CreateProductCommand> builder)
     {
         builder.For(x => x.Name)
             .NotNull()

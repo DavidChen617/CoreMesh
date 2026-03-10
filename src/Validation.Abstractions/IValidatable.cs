@@ -1,4 +1,4 @@
-namespace CoreMesh.Validation;
+namespace CoreMesh.Validation.Abstractions;
 
 /// <summary>
 /// Defines a contract for types that can configure their own validation rules.
@@ -10,5 +10,5 @@ public interface IValidatable<T>
     /// Configures the validation rules for type <typeparamref name="T"/>.
     /// </summary>
     /// <param name="builder">The validation builder used to define rules.</param>
-    void ConfigureValidateRules(ValidationBuilder<T> builder);
+    void ConfigureValidateRules(IValidationBuilder<T> builder);
 }

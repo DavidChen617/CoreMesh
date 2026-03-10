@@ -1,4 +1,7 @@
-namespace CoreMesh.Validation.Extensions;
+using System;
+using System.Collections.Generic;
+
+namespace CoreMesh.Validation.Abstractions.Extensions;
 
 /// <summary>
 /// Provides extension methods for <see cref="PropertyRuleBuilder{T, TProperty}"/> with common validation rules.
@@ -99,7 +102,7 @@ public static class PropertyRuleBuilderExtensions
     /// Validates that a value is greater than a specified minimum.
     /// </summary>
     /// <typeparam name="T">The type being validated.</typeparam>
-    /// <typeparam name="TProperty">The property type (must implement <see cref="IComparable{T}"/>).</typeparam>
+    /// <typeparam name="TProperty">The property type (must implement <see cref="IComparable"/>).</typeparam>
     /// <param name="b">The property rule builder.</param>
     /// <param name="min">The value must be greater than this.</param>
     /// <param name="message">Custom error message.</param>

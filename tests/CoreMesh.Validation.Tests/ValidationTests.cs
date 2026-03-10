@@ -1,3 +1,5 @@
+using CoreMesh.Validation.Abstractions;
+using CoreMesh.Validation.Abstractions.Extensions;
 using CoreMesh.Validation.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -130,7 +132,7 @@ public sealed class ValidationTests
 
     public sealed record CreateUserCommand(string? Name, string? Email) : IValidatable<CreateUserCommand>
     {
-        public void ConfigureValidateRules(ValidationBuilder<CreateUserCommand> builder)
+        public void ConfigureValidateRules(IValidationBuilder<CreateUserCommand> builder)
         {
             builder.For(x => x.Name).NotNull().NotEmpty().MinLength(2).MaxLength(50);
             builder.For(x => x.Email).NotNull().NotEmpty();
@@ -141,7 +143,7 @@ public sealed class ValidationTests
     {
         public static int ConfigureRulesCalls { get; set; }
 
-        public void ConfigureValidateRules(ValidationBuilder<CountingValidatable> builder)
+        public void ConfigureValidateRules(IValidationBuilder<CountingValidatable> builder)
         {
             ConfigureRulesCalls++;
             builder.For(x => x.Name).NotNull();
@@ -150,7 +152,7 @@ public sealed class ValidationTests
 
     public sealed record WithMessageCommand(string? Name) : IValidatable<WithMessageCommand>
     {
-        public void ConfigureValidateRules(ValidationBuilder<WithMessageCommand> builder)
+        public void ConfigureValidateRules(IValidationBuilder<WithMessageCommand> builder)
         {
             builder.For(x => x.Name).NotEmpty("Name cannot be blank.");
         }
@@ -158,7 +160,7 @@ public sealed class ValidationTests
 
     public sealed record ScoreCommand(int Score) : IValidatable<ScoreCommand>
     {
-        public void ConfigureValidateRules(ValidationBuilder<ScoreCommand> builder)
+        public void ConfigureValidateRules(IValidationBuilder<ScoreCommand> builder)
         {
             builder.For(x => x.Score)
                 .GreaterThan(10)
@@ -168,7 +170,7 @@ public sealed class ValidationTests
 
     public sealed record MustRuleCommand(int Quantity) : IValidatable<MustRuleCommand>
     {
-        public void ConfigureValidateRules(ValidationBuilder<MustRuleCommand> builder)
+        public void ConfigureValidateRules(IValidationBuilder<MustRuleCommand> builder)
         {
             builder.For(x => x.Quantity).Must(x => x % 2 == 0, "Must be even.");
         }
@@ -176,7 +178,7 @@ public sealed class ValidationTests
 
     public sealed record StringLengthCommand(string? Name) : IValidatable<StringLengthCommand>
     {
-        public void ConfigureValidateRules(ValidationBuilder<StringLengthCommand> builder)
+        public void ConfigureValidateRules(IValidationBuilder<StringLengthCommand> builder)
         {
             builder.For(x => x.Name)
                 .NotNull()
@@ -188,7 +190,7 @@ public sealed class ValidationTests
 
     public sealed record InvalidExpressionCommand(string? Name) : IValidatable<InvalidExpressionCommand>
     {
-        public void ConfigureValidateRules(ValidationBuilder<InvalidExpressionCommand> builder)
+        public void ConfigureValidateRules(IValidationBuilder<InvalidExpressionCommand> builder)
         {
             builder.For(x => x.Name + "x").NotEmpty();
         }
@@ -196,7 +198,7 @@ public sealed class ValidationTests
 
     public sealed record StopOnInvalidCommand(string? Name) : IValidatable<StopOnInvalidCommand>
     {
-        public void ConfigureValidateRules(ValidationBuilder<StopOnInvalidCommand> builder)
+        public void ConfigureValidateRules(IValidationBuilder<StopOnInvalidCommand> builder)
         {
             builder.For(x => x.Name)
                 .NotNull()

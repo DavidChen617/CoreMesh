@@ -1,4 +1,4 @@
-namespace CoreMesh.Validation;
+namespace CoreMesh.Validation.Abstractions;
 
 /// <summary>
 /// Represents the result of a validation operation.

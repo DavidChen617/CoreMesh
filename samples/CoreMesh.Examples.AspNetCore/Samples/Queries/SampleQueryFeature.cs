@@ -2,13 +2,15 @@ using CoreMesh.Dispatching;
 using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Mapper;
 using CoreMesh.Validation;
+using CoreMesh.Validation.Abstractions;
+using CoreMesh.Validation.Abstractions.Extensions;
 using CoreMesh.Validation.Extensions;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Queries;
 
 public sealed record SampleQuery(string Foo, string Bar) : IRequest<SampleResponse>, IValidatable<SampleQuery>
 {
-    public void ConfigureValidateRules(ValidationBuilder<SampleQuery> builder)
+    public void ConfigureValidateRules(IValidationBuilder<SampleQuery> builder)
     {
         builder.For(query => query.Foo).NotEmpty("Foo is required").NotNull("Foo is required");
         builder.For(query => query.Bar).NotEmpty("Bar is required").NotNull("Bar is required");
