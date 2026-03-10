@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\src\Validation\Validation.csproj" />
     <ProjectReference Include="..\..\src\Http\Http.csproj" />
     <ProjectReference Include="..\..\src\Result\Result.csproj" />
+    <ProjectReference Include="..\..\src\Result.AspNetCore\Result.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>
