@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Interception\Interception.csproj" />
+    <ProjectReference Include="..\..\src\Interception.Extensions\Interception.Extensions.csproj" />
   </ItemGroup>
 
 </Project>
