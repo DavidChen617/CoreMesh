@@ -27,7 +27,6 @@
     <Using Include="Xunit" />
     <Using Include="CoreMesh.Result" />
     <Using Include="CoreMesh.Result.Extensions" />
-    <Using Include="CoreMesh.Result.Http" />
   </ItemGroup>
 
 </Project>
