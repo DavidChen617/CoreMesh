@@ -1,7 +1,10 @@
 using BenchmarkDotNet.Attributes;
+using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Dispatching.Notification.Publisher;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using MediatR;
+using INotification = CoreMesh.Dispatching.Abstractions.INotification;
+using INotificationPublisher = CoreMesh.Dispatching.Abstractions.INotificationPublisher;
 
 namespace CoreMesh.Dispatching.Benchmarks;
 
@@ -121,9 +124,9 @@ public class DispatcherBenchmarks
     private static (ServiceProvider Provider, IDispatcher Dispatcher) BuildSendProvider()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<CoreMesh.Dispatching.Notification.INotificationPublisher, ForeachAwaitPublisher>();
+        services.AddSingleton<INotificationPublisher, ForeachAwaitPublisher>();
         services.AddScoped<IDispatcher, Dispatcher>();
-        services.AddScoped<IRequestHandler<SampleQuery, SampleResponse>, SampleHandler>();
+        services.AddScoped<Abstractions.IRequestHandler<SampleQuery, SampleResponse>, SampleHandler>();
 
         var sp = services.BuildServiceProvider(validateScopes: false);
         var dispatcher = sp.GetRequiredService<IDispatcher>();
@@ -133,14 +136,14 @@ public class DispatcherBenchmarks
     private static (ServiceProvider Provider, IDispatcher Dispatcher) BuildPublishProvider(int handlerCount)
     {
         var services = new ServiceCollection();
-        services.AddSingleton<CoreMesh.Dispatching.Notification.INotificationPublisher, ForeachAwaitPublisher>();
+        services.AddSingleton<INotificationPublisher, ForeachAwaitPublisher>();
         services.AddScoped<IDispatcher, Dispatcher>();
 
-        if (handlerCount >= 1) services.AddScoped<INotificationHandler<UserCreated>, NotificationHandler1>();
-        if (handlerCount >= 2) services.AddScoped<INotificationHandler<UserCreated>, NotificationHandler2>();
-        if (handlerCount >= 3) services.AddScoped<INotificationHandler<UserCreated>, NotificationHandler3>();
-        if (handlerCount >= 4) services.AddScoped<INotificationHandler<UserCreated>, NotificationHandler4>();
-        if (handlerCount >= 5) services.AddScoped<INotificationHandler<UserCreated>, NotificationHandler5>();
+        if (handlerCount >= 1) services.AddScoped<Abstractions.INotificationHandler<UserCreated>, NotificationHandler1>();
+        if (handlerCount >= 2) services.AddScoped<Abstractions.INotificationHandler<UserCreated>, NotificationHandler2>();
+        if (handlerCount >= 3) services.AddScoped<Abstractions.INotificationHandler<UserCreated>, NotificationHandler3>();
+        if (handlerCount >= 4) services.AddScoped<Abstractions.INotificationHandler<UserCreated>, NotificationHandler4>();
+        if (handlerCount >= 5) services.AddScoped<Abstractions.INotificationHandler<UserCreated>, NotificationHandler5>();
 
         var sp = services.BuildServiceProvider(validateScopes: false);
         var dispatcher = sp.GetRequiredService<IDispatcher>();
@@ -192,39 +195,39 @@ public class DispatcherBenchmarks
 
     // ========== CoreMesh Types ==========
 
-    public sealed record SampleQuery(string Foo, string Bar) : IRequest<SampleResponse>;
+    public sealed record SampleQuery(string Foo, string Bar) : Abstractions.IRequest<SampleResponse>;
 
     public sealed record SampleResponse(string Foo, string Bar);
 
     public sealed record UserCreated(int UserId) : INotification;
 
-    public sealed class SampleHandler : IRequestHandler<SampleQuery, SampleResponse>
+    public sealed class SampleHandler : Abstractions.IRequestHandler<SampleQuery, SampleResponse>
     {
         public Task<SampleResponse> Handle(SampleQuery request, CancellationToken cancellationToken = default)
             => Task.FromResult(new SampleResponse(request.Foo, request.Bar));
     }
 
-    public sealed class NotificationHandler1 : INotificationHandler<UserCreated>
+    public sealed class NotificationHandler1 : Abstractions.INotificationHandler<UserCreated>
     {
         public Task Handle(UserCreated notification, CancellationToken ct) => Task.CompletedTask;
     }
 
-    public sealed class NotificationHandler2 : INotificationHandler<UserCreated>
+    public sealed class NotificationHandler2 : Abstractions.INotificationHandler<UserCreated>
     {
         public Task Handle(UserCreated notification, CancellationToken ct) => Task.CompletedTask;
     }
 
-    public sealed class NotificationHandler3 : INotificationHandler<UserCreated>
+    public sealed class NotificationHandler3 : Abstractions.INotificationHandler<UserCreated>
     {
         public Task Handle(UserCreated notification, CancellationToken ct) => Task.CompletedTask;
     }
 
-    public sealed class NotificationHandler4 : INotificationHandler<UserCreated>
+    public sealed class NotificationHandler4 : Abstractions.INotificationHandler<UserCreated>
     {
         public Task Handle(UserCreated notification, CancellationToken ct) => Task.CompletedTask;
     }
 
-    public sealed class NotificationHandler5 : INotificationHandler<UserCreated>
+    public sealed class NotificationHandler5 : Abstractions.INotificationHandler<UserCreated>
     {
         public Task Handle(UserCreated notification, CancellationToken ct) => Task.CompletedTask;
     }

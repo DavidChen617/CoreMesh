@@ -1,4 +1,4 @@
-using CoreMesh.Dispatching;
+using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Validation;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Products;

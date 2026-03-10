@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>CoreMesh.Dispatching.Abstractions</RootNamespace>
+    <AssemblyName>CoreMesh.Dispatching.Abstractions</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>CoreMesh.Dispatching.Abstractions</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>DavidChen</Authors>
+    <Description>Abstractions for CoreMesh.Dispatching – interfaces and contracts only, no DI dependency.</Description>
+    <PackageTags>dispatcher mediator cqrs coremesh abstractions</PackageTags>
+    <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>
