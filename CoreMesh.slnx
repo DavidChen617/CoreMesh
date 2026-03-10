@@ -9,6 +9,7 @@
     <Project Path="src/Http/Http.csproj" />
     <Project Path="src/Interception/Interception.csproj" />
     <Project Path="src/Logging/Logging.csproj" />
+    <Project Path="src/Mapper.Extensions/Mapper.Extensions.csproj" />
     <Project Path="src/Mapper/Mapper.csproj" />
     <Project Path="src/Result.AspNetCore/Result.AspNetCore.csproj" />
     <Project Path="src/Result/Result.csproj" />
