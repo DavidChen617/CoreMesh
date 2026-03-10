@@ -4,6 +4,7 @@
     <ProjectReference Include="..\..\src\Mapper\Mapper.csproj" />
     <ProjectReference Include="..\..\src\Mapper.Extensions\Mapper.Extensions.csproj" />
     <ProjectReference Include="..\..\src\Interception\Interception.csproj" />
+    <ProjectReference Include="..\..\src\Interception.Extensions\Interception.Extensions.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

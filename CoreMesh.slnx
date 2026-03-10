@@ -7,6 +7,7 @@
     <Project Path="src/Dispatching/Dispatching.csproj" />
     <Project Path="src/Endpoints/Endpoints.csproj" />
     <Project Path="src/Http/Http.csproj" />
+    <Project Path="src/Interception.Extensions/Interception.Extensions.csproj" />
     <Project Path="src/Interception/Interception.csproj" />
     <Project Path="src/Logging/Logging.csproj" />
     <Project Path="src/Mapper.Extensions/Mapper.Extensions.csproj" />
