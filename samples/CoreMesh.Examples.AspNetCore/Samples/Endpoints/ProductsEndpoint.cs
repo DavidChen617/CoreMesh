@@ -1,5 +1,5 @@
 using CoreMesh.Endpoints;
-using CoreMesh.Http.Responses;
+using CoreMesh.Result.Http;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Endpoints;
 

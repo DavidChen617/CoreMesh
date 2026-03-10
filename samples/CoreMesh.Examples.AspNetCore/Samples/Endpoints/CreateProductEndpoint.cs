@@ -2,7 +2,7 @@ using CoreMesh.Dispatching;
 using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Endpoints;
 using CoreMesh.Examples.AspNetCore.Samples.Products;
-using CoreMesh.Http.Responses;
+using CoreMesh.Result.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Endpoints;
