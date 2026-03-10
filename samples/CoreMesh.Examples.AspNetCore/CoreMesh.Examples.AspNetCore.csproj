@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\src\Dispatching\Dispatching.csproj" />
     <ProjectReference Include="..\..\src\Endpoints\Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Mapper\Mapper.csproj" />
+    <ProjectReference Include="..\..\src\Mapper.Extensions\Mapper.Extensions.csproj" />
     <ProjectReference Include="..\..\src\Validation\Validation.csproj" />
     <ProjectReference Include="..\..\src\Http\Http.csproj" />
     <ProjectReference Include="..\..\src\Result\Result.csproj" />
