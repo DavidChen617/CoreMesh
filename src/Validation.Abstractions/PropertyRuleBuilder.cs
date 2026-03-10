@@ -1,4 +1,7 @@
-namespace CoreMesh.Validation;
+using System;
+using System.Collections.Generic;
+
+namespace CoreMesh.Validation.Abstractions;
 
 /// <summary>
 /// Provides a fluent API for building validation rules for a specific property.

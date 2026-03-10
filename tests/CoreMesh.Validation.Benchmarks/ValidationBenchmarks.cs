@@ -1,6 +1,9 @@
 using BenchmarkDotNet.Attributes;
+using CoreMesh.Validation.Abstractions;
+using CoreMesh.Validation.Abstractions.Extensions;
 using CoreMesh.Validation.Extensions;
 using FluentValidation;
+using CoreMeshValidator = CoreMesh.Validation.Abstractions.IValidator;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Validation.Benchmarks;
@@ -8,7 +11,7 @@ namespace CoreMesh.Validation.Benchmarks;
 [MemoryDiagnoser]
 public class ValidationBenchmarks
 {
-    private IValidator _coreMeshValidator = default!;
+    private CoreMeshValidator _coreMeshValidator = default!;
     private IValidator<CreateUserCommand> _fluentValidator = default!;
 
     private CreateUserCommand _validCommand = default!;
@@ -21,9 +24,9 @@ public class ValidationBenchmarks
     {
         // CoreMesh.Validation setup
         var services = new ServiceCollection();
-        services.AddSingleton<IValidator, Validator>();
+        services.AddSingleton<CoreMeshValidator, Validator>();
         var sp = services.BuildServiceProvider();
-        _coreMeshValidator = sp.GetRequiredService<IValidator>();
+        _coreMeshValidator = sp.GetRequiredService<CoreMeshValidator>();
 
         // FluentValidation setup
         _fluentValidator = new CreateUserCommandFluentValidator();
@@ -86,7 +89,7 @@ public class ValidationBenchmarks
     public sealed record CreateUserCommand(string? Name, string? Email, int Age)
         : IValidatable<CreateUserCommand>
     {
-        public void ConfigureValidateRules(ValidationBuilder<CreateUserCommand> builder)
+        public void ConfigureValidateRules(IValidationBuilder<CreateUserCommand> builder)
         {
             builder.For(x => x.Name)
                 .NotNull()

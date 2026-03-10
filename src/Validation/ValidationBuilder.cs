@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using CoreMesh.Validation.Abstractions;
 
 namespace CoreMesh.Validation;
 
@@ -6,7 +9,7 @@ namespace CoreMesh.Validation;
 /// Provides a fluent API for building validation rules for type <typeparamref name="T"/>.
 /// </summary>
 /// <typeparam name="T">The type being validated.</typeparam>
-public class ValidationBuilder<T>
+public class ValidationBuilder<T> : IValidationBuilder<T>
 {
     private readonly List<Func<T, RuleResult>> _rules = new();
 

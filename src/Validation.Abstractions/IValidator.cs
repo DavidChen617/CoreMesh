@@ -1,4 +1,4 @@
-namespace CoreMesh.Validation;
+namespace CoreMesh.Validation.Abstractions;
 
 /// <summary>
 /// Defines the contract for a validator that can validate objects.
