@@ -11,6 +11,7 @@
     <Project Path="src/Logging/Logging.csproj" />
     <Project Path="src/Mapper/Mapper.csproj" />
     <Project Path="src/Result/Result.csproj" />
+    <Project Path="src/Validation.Abstractions/Validation.Abstractions.csproj" />
     <Project Path="src/Validation/Validation.csproj" />
     <Project Path="src\Dispatching.Abstractions\Dispatching.Abstractions.csproj" />
   </Folder>
