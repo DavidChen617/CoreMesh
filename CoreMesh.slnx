@@ -12,6 +12,7 @@
     <Project Path="src/Mapper/Mapper.csproj" />
     <Project Path="src/Result/Result.csproj" />
     <Project Path="src/Validation/Validation.csproj" />
+    <Project Path="src\Dispatching.Abstractions\Dispatching.Abstractions.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CoreMesh.Dispatching.Benchmarks/CoreMesh.Dispatching.Benchmarks.csproj" />

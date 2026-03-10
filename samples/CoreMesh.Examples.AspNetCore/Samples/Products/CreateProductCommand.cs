@@ -1,4 +1,4 @@
-using CoreMesh.Dispatching;
+using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Validation;
 using CoreMesh.Validation.Extensions;
 

@@ -1,4 +1,4 @@
-namespace CoreMesh.Dispatching;
+namespace CoreMesh.Dispatching.Abstractions;
 
 /// <summary>
 /// Handles a request that produces a response.

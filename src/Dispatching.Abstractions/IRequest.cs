@@ -1,4 +1,4 @@
-namespace CoreMesh.Dispatching;
+namespace CoreMesh.Dispatching.Abstractions;
 
 /// <summary>
 /// Represents a request that does not return a response payload.
