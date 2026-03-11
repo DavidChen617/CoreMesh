@@ -4,10 +4,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CoreMesh.Result.Extensions;
 
+/// <summary>
+/// Extension methods for registering CoreMesh HTTP services and middleware.
+/// </summary>
 public static class ResultServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
+        /// <summary>
+        /// Registers ProblemDetails and all CoreMesh exception handlers.
+        /// </summary>
         public IServiceCollection AddCoreMeshHttp()
         {
             services
@@ -24,6 +30,9 @@ public static class ResultServiceCollectionExtensions
 
     extension(IApplicationBuilder app)
     {
+        /// <summary>
+        /// Enables the CoreMesh exception handler middleware.
+        /// </summary>
         public IApplicationBuilder UseCoreMeshHttp()
         {
             app.UseExceptionHandler();
