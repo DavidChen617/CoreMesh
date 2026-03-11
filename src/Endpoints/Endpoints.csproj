@@ -10,7 +10,7 @@
   
   <PropertyGroup>
     <PackageId>CoreMesh.Endpoints</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.1.0</Version>
     <Authors>DavidChen</Authors>
     <Description>Lightweight Endpoint library for .NET</Description>
     <PackageTags>Endpoint coremesh</PackageTags>
