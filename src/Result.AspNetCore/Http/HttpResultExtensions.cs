@@ -91,7 +91,7 @@ public static class HttpResultExtensions
     {
         /// <summary>
         /// Converts a <see cref="Result{T}"/> to a <see cref="ResultHttpResult{T}"/> that implements
-        /// <see cref="IEndpointMetadataProvider"/>, allowing ASP.NET Core to surface all possible
+        /// <c>IEndpointMetadataProvider</c>, allowing ASP.NET Core to surface all possible
         /// response types to OpenAPI automatically without manual <c>.Produces&lt;T&gt;()</c> calls.
         /// </summary>
         /// <remarks>
@@ -239,7 +239,7 @@ public static class HttpResultExtensions
         /// <remarks>
         /// Note: the parameter order differs from the <c>byte[]</c> overload — <paramref name="lastModified"/>
         /// and <paramref name="entityTag"/> appear before <paramref name="enableRangeProcessing"/> to match
-        /// the underlying <see cref="TypedResults.Stream"/> signature.
+        /// the underlying <c>TypedResults.Stream</c> signature.
         /// </remarks>
         /// <param name="contentType">The MIME type of the file. When <see langword="null"/> defaults to <c>application/octet-stream</c>.</param>
         /// <param name="fileDownloadName">The suggested file name for the download. When <see langword="null"/> no <c>Content-Disposition</c> header is set.</param>
