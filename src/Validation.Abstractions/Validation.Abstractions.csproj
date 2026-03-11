@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,5 +7,22 @@
     <RootNamespace>CoreMesh.Validation.Abstractions</RootNamespace>
     <AssemblyName>CoreMesh.Validation.Abstractions</AssemblyName>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>CoreMesh.Validation.Abstractions</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>DavidChen</Authors>
+    <Copyright>Copyright © 2026 DavidChen</Copyright>
+    <Description>Abstractions for CoreMesh.Validation – contracts, rule builder, and built-in validation rule extensions.</Description>
+    <PackageTags>validation fluent rules coremesh abstractions</PackageTags>
+    <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/DavidChen617/CoreMesh</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>
