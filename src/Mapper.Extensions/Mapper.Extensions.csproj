@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,6 +7,23 @@
     <RootNamespace>CoreMesh.Mapper.Extensions</RootNamespace>
     <AssemblyName>CoreMesh.Mapper.Extensions</AssemblyName>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>CoreMesh.Mapper.Extensions</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>DavidChen</Authors>
+    <Copyright>Copyright © 2026 DavidChen</Copyright>
+    <Description>DI registration extensions for CoreMesh.Mapper – assembly scanning and IMapper singleton registration.</Description>
+    <PackageTags>mapper dto mapping coremesh di</PackageTags>
+    <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/DavidChen617/CoreMesh</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Mapper\Mapper.csproj" />
