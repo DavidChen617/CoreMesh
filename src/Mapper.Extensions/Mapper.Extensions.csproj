@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>CoreMesh.Mapper.Extensions</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>DavidChen</Authors>
     <Copyright>Copyright © 2026 DavidChen</Copyright>
     <Description>DI registration extensions for CoreMesh.Mapper – assembly scanning and IMapper singleton registration.</Description>
@@ -26,12 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mapper\Mapper.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.0, )"/>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[10.0.0, )"/>
+    <PackageReference Include="CoreMesh.Mapper" Version="0.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.0, )" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[10.0.0, )" />
   </ItemGroup>
 
 </Project>
