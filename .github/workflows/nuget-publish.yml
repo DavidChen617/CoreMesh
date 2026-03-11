@@ -1,0 +1,94 @@
+name: Publish NuGet Packages
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  publish:
+    if: |
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Resolve projects to pack
+        id: resolve
+        shell: bash
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          FEATURE="${BRANCH#release/}"
+          echo "feature=$FEATURE" >> $GITHUB_OUTPUT
+
+          case "$FEATURE" in
+            # Full group releases (abstractions/extensions included)
+            Dispatching)
+              PROJECTS="src/Dispatching.Abstractions/Dispatching.Abstractions.csproj src/Dispatching/Dispatching.csproj"
+              ;;
+            Endpoint)
+              PROJECTS="src/Endpoints/Endpoints.csproj"
+              ;;
+            Interception)
+              PROJECTS="src/Interception/Interception.csproj src/Interception.Extensions/Interception.Extensions.csproj"
+              ;;
+            Logging)
+              PROJECTS="src/Logging/Logging.csproj"
+              ;;
+            Mapper)
+              PROJECTS="src/Mapper/Mapper.csproj src/Mapper.Extensions/Mapper.Extensions.csproj"
+              ;;
+            Result)
+              PROJECTS="src/Result/Result.csproj src/Result.AspNetCore/Result.AspNetCore.csproj"
+              ;;
+            Validation)
+              PROJECTS="src/Validation.Abstractions/Validation.Abstractions.csproj src/Validation/Validation.csproj"
+              ;;
+            # Individual sub-package releases
+            Dispatching.Abstractions)
+              PROJECTS="src/Dispatching.Abstractions/Dispatching.Abstractions.csproj"
+              ;;
+            Interception.Extensions)
+              PROJECTS="src/Interception.Extensions/Interception.Extensions.csproj"
+              ;;
+            Mapper.Extensions)
+              PROJECTS="src/Mapper.Extensions/Mapper.Extensions.csproj"
+              ;;
+            Result.AspNetCore)
+              PROJECTS="src/Result.AspNetCore/Result.AspNetCore.csproj"
+              ;;
+            Validation.Abstractions)
+              PROJECTS="src/Validation.Abstractions/Validation.Abstractions.csproj"
+              ;;
+            *)
+              echo "::warning::Unknown release branch: $BRANCH — no projects to pack."
+              PROJECTS=""
+              ;;
+          esac
+
+          echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
+
+      - name: Pack
+        if: steps.resolve.outputs.projects != ''
+        run: |
+          for PROJECT in ${{ steps.resolve.outputs.projects }}; do
+            echo "Packing $PROJECT"
+            dotnet pack "$PROJECT" -c Release -o ./nupkg
+          done
+
+      - name: Push to NuGet
+        if: steps.resolve.outputs.projects != ''
+        run: |
+          dotnet nuget push "./nupkg/*.nupkg" \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
