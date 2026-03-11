@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>CoreMesh.Validation</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>DavidChen</Authors>
     <Copyright>Copyright © 2026 DavidChen</Copyright>
     <Description>Lightweight fluent validation library for .NET with rule caching and DI-friendly validator entry point.</Description>
@@ -26,11 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Validation.Abstractions\Validation.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.0, )"/>
+    <PackageReference Include="CoreMesh.Validation.Abstractions" Version="0.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.0, )" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[10.0.0, )" />
   </ItemGroup>
 
