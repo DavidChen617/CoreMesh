@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,7 +7,24 @@
     <RootNamespace>CoreMesh.Validation</RootNamespace>
     <AssemblyName>CoreMesh.Validation</AssemblyName>
   </PropertyGroup>
-  
+
+  <PropertyGroup>
+    <PackageId>CoreMesh.Validation</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>DavidChen</Authors>
+    <Copyright>Copyright © 2026 DavidChen</Copyright>
+    <Description>Lightweight fluent validation library for .NET with rule caching and DI-friendly validator entry point.</Description>
+    <PackageTags>validation fluent rules coremesh</PackageTags>
+    <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/DavidChen617/CoreMesh</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Validation.Abstractions\Validation.Abstractions.csproj" />
   </ItemGroup>
@@ -16,5 +33,5 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.0, )"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[10.0.0, )" />
   </ItemGroup>
-  
+
 </Project>
