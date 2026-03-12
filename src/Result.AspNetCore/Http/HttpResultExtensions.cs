@@ -79,7 +79,7 @@ public static class HttpResultExtensions
             Detail = result.Error.Description
         };
 
-        internal ValidationProblemDetails ToValidationProblem() => new(new Dictionary<string, string[]>(result.ValidationErrors))
+        internal ValidationProblemDetails ToValidationProblem() => new(result.ValidationErrors.ToDictionary(k => k.Key, v => v.Value.ToArray()))
         {
             Status = 422,
             Title = result.Error.Code,
@@ -149,7 +149,7 @@ public static class HttpResultExtensions
             Detail = result.Error.Description
         };
 
-        internal ValidationProblemDetails ToValidationProblem() => new(new Dictionary<string, string[]>(result.ValidationErrors))
+        internal ValidationProblemDetails ToValidationProblem() => new(result.ValidationErrors.ToDictionary(k => k.Key, v => v.Value.ToArray()))
         {
             Status = 422,
             Title = result.Error.Code,

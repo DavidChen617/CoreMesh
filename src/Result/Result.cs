@@ -32,10 +32,10 @@ public record Result
 
     internal static Result Create(ResultStatus status, Error error) => new(status, error);
 
-    internal static Result Create(IDictionary<string, string[]> validationErrors) =>
+    internal static Result Create(IDictionary<string, IReadOnlyList<string>> validationErrors) =>
         new(ResultStatus.Invalid, new Error("VALIDATION", "One or more validation errors occurred"))
         {
-            ValidationErrors = new Dictionary<string, string[]>(validationErrors)
+            ValidationErrors = new Dictionary<string, IReadOnlyList<string>>(validationErrors)
         };
 
     /// <summary>
@@ -62,8 +62,8 @@ public record Result
     /// Gets the validation errors produced when the result status is <see cref="ResultStatus.Invalid"/>.
     /// Returns an empty dictionary when there are no validation errors.
     /// </summary>
-    public IReadOnlyDictionary<string, string[]> ValidationErrors { get; init; } =
-        new Dictionary<string, string[]>();
+    public IReadOnlyDictionary<string, IReadOnlyList<string>> ValidationErrors { get; init; } =
+        new Dictionary<string, IReadOnlyList<string>>();
 
     /// <summary>
     /// Implicitly converts an <see cref="Error"/> to a failed <see cref="Result"/> with status <see cref="ResultStatus.BadRequest"/>.
@@ -105,10 +105,10 @@ public record Result<T> : Result
     internal static Result<T> Create(T value, ResultStatus status) => new(value, status);
     internal static Result<T> Create(Error error, ResultStatus status) => new(error, status);
 
-    internal new static Result<T> Create(IDictionary<string, string[]> validationErrors) =>
+    internal new static Result<T> Create(IDictionary<string, IReadOnlyList<string>> validationErrors) =>
         new(new Error("VALIDATION", "One or more validation errors occurred"), ResultStatus.Invalid)
         {
-            ValidationErrors = new Dictionary<string, string[]>(validationErrors)
+            ValidationErrors = new Dictionary<string, IReadOnlyList<string>>(validationErrors)
         };
 
     /// <summary>
