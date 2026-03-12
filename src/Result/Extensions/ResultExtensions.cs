@@ -61,7 +61,10 @@ public static class ResultExtensions
         /// A dictionary mapping field names to their associated error messages.
         /// </param>
         /// <returns>A failed <see cref="Result"/> whose <see cref="Result.ValidationErrors"/> is populated.</returns>
-        public static Result Invalid(IDictionary<string, string[]> errors) => Result.Create(errors);
+        public static Result Invalid(IDictionary<string, IReadOnlyList<string>> errors) => Result.Create(errors);
+
+        public static Result Invalid<TList>(IDictionary<string, TList> errors) where TList : IReadOnlyList<string>
+            => Result.Create(errors.ToDictionary(k => k.Key, v => (IReadOnlyList<string>)v.Value));
     }
 
     extension<T>(Result<T>)
@@ -115,6 +118,9 @@ public static class ResultExtensions
         /// A dictionary mapping field names to their associated error messages.
         /// </param>
         /// <returns>A failed <see cref="Result{T}"/> whose <see cref="Result.ValidationErrors"/> is populated.</returns>
-        public static Result<T> Invalid(IDictionary<string, string[]> errors) => Result<T>.Create(errors);
+        public static Result<T> Invalid(IDictionary<string, IReadOnlyList<string>> errors) => Result<T>.Create(errors);
+
+        public static Result<T> Invalid<TList>(IDictionary<string, TList> errors) where TList : IReadOnlyList<string>
+            => Result<T>.Create(errors.ToDictionary(k => k.Key, v => (IReadOnlyList<string>)v.Value));
     }
 }
