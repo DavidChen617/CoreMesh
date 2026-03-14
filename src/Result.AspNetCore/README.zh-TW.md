@@ -7,8 +7,8 @@
 ## 註冊
 
 ```csharp
-builder.Services.AddCoreMeshHttp();
-app.UseCoreMeshHttp();
+builder.Services.AddCoreMeshExceptionHandling();
+app.UseCoreMeshExceptionHandling();
 ```
 
 依序註冊 `ProblemDetails` 與以下 exception handler：

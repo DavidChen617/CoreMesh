@@ -1,3 +1,4 @@
+using CoreMesh.Result.Exceptions;
 using CoreMesh.Result.Http;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +25,8 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
     {
         logger.LogError(exception, "Unhandled exception occurred. TraceId: {TraceId}", httpContext.TraceIdentifier);
 
-        var statusCode = MapStatusCode(exception);
+        var statusCode = exception is AppException appEx ? (int)appEx.StatusCode : StatusCodes.Status500InternalServerError;
+        var code = exception is AppException appException ? appException.Code : "unexpected_error";
         var message = GetSafeErrorMessage(exception, httpContext);
 
         httpContext.Response.StatusCode = statusCode;
@@ -39,44 +41,18 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
         problem.Extensions["traceId"] = httpContext.TraceIdentifier;
 
         await httpContext.Response.WriteAsJsonAsync(
-            ApiResponse.OnFailure(problem, MapCode(exception)),
+            ApiResponse.OnFailure(problem, code),
             cancellationToken);
 
         return true;
     }
-
-    private static int MapStatusCode(Exception exception) => exception switch
-    {
-        AppException appEx              => (int)appEx.StatusCode,
-        ArgumentNullException           => StatusCodes.Status400BadRequest,
-        ArgumentException               => StatusCodes.Status400BadRequest,
-        UnauthorizedAccessException     => StatusCodes.Status401Unauthorized,
-        _                               => StatusCodes.Status500InternalServerError
-    };
-
-    private static string MapCode(Exception exception) => exception switch
-    {
-        BadRequestException         => "bad_request",
-        ValidationException         => "validation_error",
-        ConcurrencyException        => "concurrency_conflict",
-        ConflictException           => "conflict",
-        ForbiddenException          => "forbidden",
-        NotFoundException           => "not_found",
-        ExternalServiceException    => "external_service_error",
-        UnauthorizedAccessException => "unauthorized",
-        ArgumentNullException       => "bad_request",
-        ArgumentException           => "bad_request",
-        _                           => "unexpected_error"
-    };
 
     private static string GetSafeErrorMessage(Exception exception, HttpContext context)
     {
         var env = context.RequestServices.GetRequiredService<IHostEnvironment>();
 
         if (env.IsDevelopment())
-        {
             return exception.Message;
-        }
 
         return exception is AppException ? exception.Message : "An unexpected error occurred";
     }

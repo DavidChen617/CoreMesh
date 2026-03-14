@@ -12,16 +12,13 @@ public static class ResultServiceCollectionExtensions
     extension(IServiceCollection services)
     {
         /// <summary>
-        /// Registers ProblemDetails and all CoreMesh exception handlers.
+        /// Registers ProblemDetails and CoreMesh exception handlers.
         /// </summary>
-        public IServiceCollection AddCoreMeshHttp()
+        public IServiceCollection AddCoreMeshExceptionHandling()
         {
             services
                 .AddProblemDetails()
                 .AddExceptionHandler<ValidationExceptionHandler>()
-                .AddExceptionHandler<ConflictExceptionHandler>()
-                .AddExceptionHandler<ForbiddenExceptionHandler>()
-                .AddExceptionHandler<NotFoundExceptionHandler>()
                 .AddExceptionHandler<GlobalExceptionHandler>();
 
             return services;
@@ -33,7 +30,7 @@ public static class ResultServiceCollectionExtensions
         /// <summary>
         /// Enables the CoreMesh exception handler middleware.
         /// </summary>
-        public IApplicationBuilder UseCoreMeshHttp()
+        public IApplicationBuilder UseCoreMeshExceptionHandling()
         {
             app.UseExceptionHandler();
             return app;

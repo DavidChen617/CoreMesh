@@ -7,8 +7,8 @@ ASP.NET Core integration for `CoreMesh.Result`. Provides global exception handli
 ## Registration
 
 ```csharp
-builder.Services.AddCoreMeshHttp();
-app.UseCoreMeshHttp();
+builder.Services.AddCoreMeshExceptionHandling();
+app.UseCoreMeshExceptionHandling();
 ```
 
 Registers `ProblemDetails` and the following exception handlers (in order):
