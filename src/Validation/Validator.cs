@@ -54,7 +54,7 @@ public sealed class Validator(IServiceProvider sp) : IValidator
             if (!result.Errors.TryGetValue(ruleResult.PropertyName, out var list))
                 result.Errors[ruleResult.PropertyName] = list = new List<string>();
 
-            list.Add(ruleResult.ErrorMessage);
+            ((List<string>)list).Add(ruleResult.ErrorMessage);
         }
 
         return result;
