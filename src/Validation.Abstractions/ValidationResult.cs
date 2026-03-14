@@ -14,5 +14,5 @@ public class ValidationResult
     /// Gets the dictionary of validation errors, where the key is the property name
     /// and the value is a list of error messages for that property.
     /// </summary>
-    public Dictionary<string, List<string>> Errors { get; } = new();
+    public Dictionary<string, IReadOnlyList<string>> Errors { get; } = new();
 }
