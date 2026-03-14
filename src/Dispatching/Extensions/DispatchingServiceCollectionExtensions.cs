@@ -35,7 +35,7 @@ public static class DispatchingServiceCollectionExtensions
             var options = new DispatchingOptions();
             configure?.Invoke(options);
 
-            services.AddSingleton<IDispatcher, Dispatcher>();
+            services.AddScoped<IDispatcher, Dispatcher>();
             services.AddSingleton(typeof(INotificationPublisher), options.NotificationPublisherType);
 
             var handlers = assemblies.SelectMany(x => x.DefinedTypes)
