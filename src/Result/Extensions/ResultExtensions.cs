@@ -63,6 +63,13 @@ public static class ResultExtensions
         /// <returns>A failed <see cref="Result"/> whose <see cref="Result.ValidationErrors"/> is populated.</returns>
         public static Result Invalid(IDictionary<string, IReadOnlyList<string>> errors) => Result.Create(errors);
 
+        /// <summary>
+        /// Creates a failed <see cref="Result"/> with status <see cref="ResultStatus.Invalid"/> from a dictionary
+        /// whose values implement <see cref="IReadOnlyList{T}"/>.
+        /// </summary>
+        /// <typeparam name="TList">The list type of the error values.</typeparam>
+        /// <param name="errors">A dictionary mapping field names to their associated error messages.</param>
+        /// <returns>A failed <see cref="Result"/> whose <see cref="Result.ValidationErrors"/> is populated.</returns>
         public static Result Invalid<TList>(IDictionary<string, TList> errors) where TList : IReadOnlyList<string>
             => Result.Create(errors.ToDictionary(k => k.Key, v => (IReadOnlyList<string>)v.Value));
     }
@@ -120,6 +127,13 @@ public static class ResultExtensions
         /// <returns>A failed <see cref="Result{T}"/> whose <see cref="Result.ValidationErrors"/> is populated.</returns>
         public static Result<T> Invalid(IDictionary<string, IReadOnlyList<string>> errors) => Result<T>.Create(errors);
 
+        /// <summary>
+        /// Creates a failed <see cref="Result{T}"/> with status <see cref="ResultStatus.Invalid"/> from a dictionary
+        /// whose values implement <see cref="IReadOnlyList{T}"/>.
+        /// </summary>
+        /// <typeparam name="TList">The list type of the error values.</typeparam>
+        /// <param name="errors">A dictionary mapping field names to their associated error messages.</param>
+        /// <returns>A failed <see cref="Result{T}"/> whose <see cref="Result.ValidationErrors"/> is populated.</returns>
         public static Result<T> Invalid<TList>(IDictionary<string, TList> errors) where TList : IReadOnlyList<string>
             => Result<T>.Create(errors.ToDictionary(k => k.Key, v => (IReadOnlyList<string>)v.Value));
     }

@@ -26,7 +26,7 @@ builder.Services
     .AddDispatching([typeof(Program).Assembly])
     .AddCoreMeshMapper([typeof(Program).Assembly])
     .AddValidatable()
-    .AddCoreMeshHttp();
+    .AddCoreMeshExceptionHandling();
 
 // builder.Services.AddLogging(logging => { });
 
@@ -40,7 +40,7 @@ if (app.Environment.IsDevelopment())
 app.MapPost("test", (Test1 t) => Result<Test1>.Ok(new Test1 { Test = t.Test }).ToHttpResult());
 
 app.UseHttpsRedirection();
-app.UseCoreMeshHttp();
+app.UseCoreMeshExceptionHandling();
 app.MapEndpoints();
 
 app.Run();

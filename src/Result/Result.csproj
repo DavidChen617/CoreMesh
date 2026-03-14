@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>CoreMesh.Result</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <Authors>DavidChen</Authors>
     <Copyright>Copyright © 2026 DavidChen</Copyright>
     <Description>Strongly-typed result pattern for .NET with built-in status codes, error details, and validation error support.</Description>
