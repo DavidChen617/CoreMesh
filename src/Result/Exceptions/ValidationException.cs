@@ -10,17 +10,17 @@ public sealed class ValidationException : AppException
     /// <summary>
     /// Gets the grouped validation errors keyed by field name.
     /// </summary>
-    public IDictionary<string, string[]> Errors { get; }
+    public IReadOnlyDictionary<string, IReadOnlyList<string>> Errors { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ValidationException"/> class from grouped errors.
     /// </summary>
     /// <param name="errors">The grouped validation errors.</param>
-    public ValidationException(IDictionary<string, string[]> errors) :
-        base("One or more validation errors occurred.", HttpStatusCode.UnprocessableEntity)
+    public ValidationException(IDictionary<string, IReadOnlyList<string>> errors) :
+        base("One or more validation errors occurred.", HttpStatusCode.UnprocessableEntity, "validation_error")
     {
         ArgumentNullException.ThrowIfNull(errors);
-        Errors = errors;
+        Errors = errors.AsReadOnly();
     }
 
     /// <summary>
@@ -29,12 +29,12 @@ public sealed class ValidationException : AppException
     /// <param name="field">The field name.</param>
     /// <param name="error">The error message.</param>
     public ValidationException(string field, string error) :
-        base("One or more validation errors occurred.", HttpStatusCode.UnprocessableEntity)
+        base("One or more validation errors occurred.", HttpStatusCode.UnprocessableEntity, "validation_error")
     {
-        Errors = new Dictionary<string, string[]>
+        Errors = new Dictionary<string, IReadOnlyList<string>>
         {
             { field, [error] }
-        };
+        }.AsReadOnly();
     }
 
     /// <summary>
@@ -42,13 +42,14 @@ public sealed class ValidationException : AppException
     /// </summary>
     /// <param name="failures">The validation error items.</param>
     public ValidationException(IEnumerable<ValidationErrorItem> failures) :
-        base("One or more validation errors occurred.", HttpStatusCode.UnprocessableEntity)
+        base("One or more validation errors occurred.", HttpStatusCode.UnprocessableEntity, "validation_error")
     {
         Errors = failures
             .GroupBy(f => f.PropertyName)
             .ToDictionary(
                 g => g.Key,
-                g => g.Select(f => f.ErrorMessage).ToArray());
+                g => (IReadOnlyList<string>)g.Select(f => f.ErrorMessage).ToList())
+            .AsReadOnly();
     }
 }
 

@@ -43,9 +43,9 @@ A typical ASP.NET Core setup combining the most common packages:
 builder.Services.AddDispatching(typeof(Program).Assembly);
 builder.Services.AddValidatable(typeof(Program).Assembly);
 builder.Services.AddCoreMeshMapper(typeof(Program).Assembly);
-builder.Services.AddCoreMeshHttp();
+builder.Services.AddCoreMeshExceptionHandling();
 
-app.UseCoreMeshHttp();
+app.UseCoreMeshExceptionHandling();
 ```
 
 ```csharp
