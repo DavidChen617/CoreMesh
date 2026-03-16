@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>CoreMesh.Result.AspNetCore</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>DavidChen</Authors>
     <Copyright>Copyright © 2026 DavidChen</Copyright>
     <Description>ASP.NET Core integration for CoreMesh.Result – global exception handling, HTTP response conversion, and ApiResponse envelope.</Description>
@@ -36,7 +36,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="CoreMesh.Result" Version="0.3.0" />
+    <PackageReference Include="CoreMesh.Result" Version="0.3.1" />
   </ItemGroup>
 
 </Project>
