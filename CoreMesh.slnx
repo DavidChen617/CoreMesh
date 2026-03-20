@@ -11,6 +11,7 @@
     <Project Path="src/Logging/Logging.csproj" />
     <Project Path="src/Mapper.Extensions/Mapper.Extensions.csproj" />
     <Project Path="src/Mapper/Mapper.csproj" />
+    <Project Path="src/Middleware/Middleware.csproj" />
     <Project Path="src/Result.AspNetCore/Result.AspNetCore.csproj" />
     <Project Path="src/Result/Result.csproj" />
     <Project Path="src/Validation.Abstractions/Validation.Abstractions.csproj" />
@@ -27,6 +28,7 @@
     <Project Path="tests/CoreMesh.Mapper.Tests/CoreMesh.Mapper.Tests.csproj" />
     <Project Path="tests/CoreMesh.Result.Tests/CoreMesh.Result.Tests.csproj" />
     <Project Path="tests/CoreMesh.Validation.Benchmarks/CoreMesh.Validation.Benchmarks.csproj" />
+    <Project Path="tests/CoreMesh.Middleware.Tests/CoreMesh.Middleware.Tests.csproj" />
     <Project Path="tests/CoreMesh.Validation.Tests/CoreMesh.Validation.Tests.csproj" />
   </Folder>
 </Solution>

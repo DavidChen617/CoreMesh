@@ -10,6 +10,7 @@
     <PackageReference Include="Asp.Versioning.Http" Version="8.1.1" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.24" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
     <ProjectReference Include="..\..\src\Validation\Validation.csproj" />
     <ProjectReference Include="..\..\src\Result\Result.csproj" />
     <ProjectReference Include="..\..\src\Result.AspNetCore\Result.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Middleware\Middleware.csproj" />
   </ItemGroup>
 
 </Project>
