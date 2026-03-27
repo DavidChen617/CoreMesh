@@ -175,7 +175,7 @@ public sealed class MapperTests
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 
         Assert.NotNull(method);
-        method!.Invoke(mapper, [targetType]);
+        method!.Invoke(mapper, [targetType, null]);
     }
 
     private sealed class SourceUser

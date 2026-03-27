@@ -17,21 +17,45 @@ public class Mapper : IMapper
     /// Scans the specified assembly for mapping contracts and registers all discovered mappings.
     /// </summary>
     /// <param name="assembly">The assembly to scan.</param>
-    public void RegisterMapper(Assembly assembly)
+    /// <param name="factory">
+    /// An optional factory used to create mapper instances.
+    /// When <see langword="null"/>, a public parameterless constructor is required.
+    /// Supply a factory (e.g. <c>ActivatorUtilities.CreateInstance</c>) to support
+    /// constructor injection.
+    /// </param>
+    public void RegisterMapper(Assembly assembly, Func<Type, object>? factory = null)
     {
         var types = assembly.GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract && !t.IsGenericType);
 
         foreach (var type in types)
         {
-            RegisterIMapFrom(type);
-            RegisterIMapFrom2(type);
-            RegisterIMapFrom3(type);
-            RegisterIMapWith(type);
+            RegisterIMapFrom(type, factory);
+            RegisterIMapFrom2(type, factory);
+            RegisterIMapFrom3(type, factory);
+            RegisterIMapWith(type, factory);
         }
     }
 
-    private void RegisterIMapFrom(Type type)
+    private static object CreateInstance(Type type, Func<Type, object>? factory)
+    {
+        if (factory is not null)
+            return factory(type);
+
+        try
+        {
+            return Activator.CreateInstance(type)
+                ?? throw new InvalidOperationException($"Activator.CreateInstance returned null for '{type.FullName}'.");
+        }
+        catch (MissingMethodException)
+        {
+            throw new InvalidOperationException(
+                $"Mapper type '{type.FullName}' does not have a public parameterless constructor. " +
+                "Provide a factory delegate to RegisterMapper, or use AddCoreMeshMapper to enable constructor injection.");
+        }
+    }
+
+    private void RegisterIMapFrom(Type type, Func<Type, object>? factory)
     {
         IEnumerable<Type> interfaces = GetInterfaces(type, typeof(IMapFrom<,>));
 
@@ -41,10 +65,11 @@ public class Mapper : IMapper
             var sourceType = args[0];
             var destType = args[1];
 
+            var instance = CreateInstance(type, factory);
             var mapper = CompileMapper(
                 sourceType,
                 destType,
-                type,
+                instance,
                 @interface,
                 nameof(IMapFrom<,>.MapFrom));
 
@@ -52,7 +77,7 @@ public class Mapper : IMapper
         }
     }
 
-    private void RegisterIMapFrom2(Type type)
+    private void RegisterIMapFrom2(Type type, Func<Type, object>? factory)
     {
         IEnumerable<Type> interfaces = GetInterfaces(type, typeof(IMapFrom<,,>));
 
@@ -63,11 +88,12 @@ public class Mapper : IMapper
             var sourceType2 = args[1];
             var destType = args[2];
 
+            var instance = CreateInstance(type, factory);
             var mapper = CompileMapper2(
                 sourceType1,
                 sourceType2,
                 destType,
-                type,
+                instance,
                 @interface,
                 nameof(IMapFrom<object, object, object>.MapFrom));
 
@@ -75,7 +101,7 @@ public class Mapper : IMapper
         }
     }
 
-    private void RegisterIMapFrom3(Type type)
+    private void RegisterIMapFrom3(Type type, Func<Type, object>? factory)
     {
         IEnumerable<Type> interfaces = GetInterfaces(type, typeof(IMapFrom<,,,>));
 
@@ -87,12 +113,13 @@ public class Mapper : IMapper
             var sourceType3 = args[2];
             var destType = args[3];
 
+            var instance = CreateInstance(type, factory);
             var mapper = CompileMapper3(
                 sourceType1,
                 sourceType2,
                 sourceType3,
                 destType,
-                type,
+                instance,
                 @interface,
                 nameof(IMapFrom<,,,>.MapFrom));
 
@@ -100,7 +127,7 @@ public class Mapper : IMapper
         }
     }
 
-    private void RegisterIMapWith(Type type)
+    private void RegisterIMapWith(Type type, Func<Type, object>? factory)
     {
         IEnumerable<Type> interfaces = GetInterfaces(type, typeof(IMapWith<,>));
 
@@ -111,10 +138,11 @@ public class Mapper : IMapper
             var destinationType = args[1];
 
             // Source -> Destination
+            var instance = CreateInstance(type, factory);
             var mapFromMapper = CompileMapper(
                 sourceType,
                 destinationType,
-                type,
+                instance,
                 @interface,
                 nameof(IMapWith<,>.MapFrom));
 
@@ -142,89 +170,67 @@ public class Mapper : IMapper
         return interfaces;
     }
 
-    private Delegate CompileMapper(
+    private static Delegate CompileMapper(
         Type sourceType,
         Type destType,
-        Type mapperType,
+        object instance,
         Type targetInterface,
         string methodName)
     {
         var sourceParam = Expression.Parameter(sourceType, "source");
+        var instanceExpr = Expression.Constant(instance);
 
-        var defaultCtor = mapperType.GetConstructor(Type.EmptyTypes);
-        if (defaultCtor is null)
-        {
-            throw new InvalidOperationException(
-                $"Mapper type '{mapperType.FullName}' must define a public parameterless constructor.");
-        }
-
-        var mapperInstance = Expression.New(defaultCtor);
-
-        var method = mapperType.GetInterfaceMap(targetInterface)
+        var method = instance.GetType().GetInterfaceMap(targetInterface)
             .TargetMethods
             .First(m => m.Name.EndsWith(methodName));
 
-        var callMethod = Expression.Call(mapperInstance, method, sourceParam);
+        var callMethod = Expression.Call(instanceExpr, method, sourceParam);
         var lambdaType = typeof(Func<,>).MakeGenericType(sourceType, destType);
 
         return Expression.Lambda(lambdaType, callMethod, sourceParam).Compile();
     }
 
-    private Delegate CompileMapper2(
+    private static Delegate CompileMapper2(
         Type sourceType1,
         Type sourceType2,
         Type destType,
-        Type mapperType,
+        object instance,
         Type targetInterface,
         string methodName)
     {
         var sourceParam1 = Expression.Parameter(sourceType1, "source1");
         var sourceParam2 = Expression.Parameter(sourceType2, "source2");
+        var instanceExpr = Expression.Constant(instance);
 
-        var defaultCtor = mapperType.GetConstructor(Type.EmptyTypes);
-        if (defaultCtor is null)
-        {
-            throw new InvalidOperationException(
-                $"Mapper type '{mapperType.FullName}' must define a public parameterless constructor.");
-        }
-
-        var mapperInstance = Expression.New(defaultCtor);
-        var method = mapperType.GetInterfaceMap(targetInterface)
+        var method = instance.GetType().GetInterfaceMap(targetInterface)
             .TargetMethods
             .First(m => m.Name.EndsWith(methodName));
 
-        var callMethod = Expression.Call(mapperInstance, method, sourceParam1, sourceParam2);
+        var callMethod = Expression.Call(instanceExpr, method, sourceParam1, sourceParam2);
         var lambdaType = typeof(Func<,,>).MakeGenericType(sourceType1, sourceType2, destType);
 
         return Expression.Lambda(lambdaType, callMethod, sourceParam1, sourceParam2).Compile();
     }
 
-    private Delegate CompileMapper3(
+    private static Delegate CompileMapper3(
         Type sourceType1,
         Type sourceType2,
         Type sourceType3,
         Type destType,
-        Type mapperType,
+        object instance,
         Type targetInterface,
         string methodName)
     {
         var sourceParam1 = Expression.Parameter(sourceType1, "source1");
         var sourceParam2 = Expression.Parameter(sourceType2, "source2");
         var sourceParam3 = Expression.Parameter(sourceType3, "source3");
+        var instanceExpr = Expression.Constant(instance);
 
-        var defaultCtor = mapperType.GetConstructor(Type.EmptyTypes);
-        if (defaultCtor is null)
-        {
-            throw new InvalidOperationException(
-                $"Mapper type '{mapperType.FullName}' must define a public parameterless constructor.");
-        }
-
-        var mapperInstance = Expression.New(defaultCtor);
-        var method = mapperType.GetInterfaceMap(targetInterface)
+        var method = instance.GetType().GetInterfaceMap(targetInterface)
             .TargetMethods
             .First(m => m.Name.EndsWith(methodName));
 
-        var callMethod = Expression.Call(mapperInstance, method, sourceParam1, sourceParam2, sourceParam3);
+        var callMethod = Expression.Call(instanceExpr, method, sourceParam1, sourceParam2, sourceParam3);
         var lambdaType = typeof(Func<,,,>).MakeGenericType(sourceType1, sourceType2, sourceType3, destType);
 
         return Expression.Lambda(lambdaType, callMethod, sourceParam1, sourceParam2, sourceParam3).Compile();
