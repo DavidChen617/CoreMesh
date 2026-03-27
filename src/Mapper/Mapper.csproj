@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>CoreMesh.Mapper</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Authors>DavidChen</Authors>
     <Copyright>Copyright © 2026 DavidChen</Copyright>
     <Description>Lightweight convention-based object mapper for .NET with assembly scanning and strongly-typed mapping contracts.</Description>
