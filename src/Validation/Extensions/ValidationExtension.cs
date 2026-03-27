@@ -33,7 +33,7 @@ public static class ValidationExtension
                 foreach (var itf in impl.GetInterfaces()
                              .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IValidatable<>)))
                 {
-                    services.TryAddSingleton(itf, impl);
+                    services.TryAddTransient(itf, impl);
                 }
             }
 
