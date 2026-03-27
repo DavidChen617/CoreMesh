@@ -1,7 +1,7 @@
 using CoreMesh.Endpoints;
 using CoreMesh.Examples.AspNetCore.Samples.Mapper;
-using CoreMesh.Result.Http;
 using CoreMesh.Mapper;
+using CoreMesh.Result.Http;
 
 namespace CoreMesh.Examples.AspNetCore.Samples.Endpoints;
 

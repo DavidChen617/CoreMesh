@@ -1,6 +1,5 @@
 using System.Reflection;
 using CoreMesh.Dispatching.Abstractions;
-using CoreMesh.Dispatching.Notification;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

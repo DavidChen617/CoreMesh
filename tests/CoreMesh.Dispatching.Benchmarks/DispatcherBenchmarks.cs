@@ -1,8 +1,8 @@
 using BenchmarkDotNet.Attributes;
 using CoreMesh.Dispatching.Abstractions;
 using CoreMesh.Dispatching.Notification.Publisher;
-using Microsoft.Extensions.DependencyInjection;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using INotification = CoreMesh.Dispatching.Abstractions.INotification;
 using INotificationPublisher = CoreMesh.Dispatching.Abstractions.INotificationPublisher;
 

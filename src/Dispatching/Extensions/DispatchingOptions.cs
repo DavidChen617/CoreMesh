@@ -1,5 +1,4 @@
 using CoreMesh.Dispatching.Abstractions;
-using CoreMesh.Dispatching.Notification;
 using CoreMesh.Dispatching.Notification.Publisher;
 
 namespace CoreMesh.Dispatching.Extensions;

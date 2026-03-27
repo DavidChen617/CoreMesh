@@ -3,8 +3,8 @@ using CoreMesh.Validation.Abstractions;
 using CoreMesh.Validation.Abstractions.Extensions;
 using CoreMesh.Validation.Extensions;
 using FluentValidation;
-using CoreMeshValidator = CoreMesh.Validation.Abstractions.IValidator;
 using Microsoft.Extensions.DependencyInjection;
+using CoreMeshValidator = CoreMesh.Validation.Abstractions.IValidator;
 
 namespace CoreMesh.Validation.Benchmarks;
 
