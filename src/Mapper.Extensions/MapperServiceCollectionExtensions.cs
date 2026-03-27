@@ -21,13 +21,13 @@ public static class MapperServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(services);
             ArgumentNullException.ThrowIfNull(assemblies);
 
-            services.TryAddSingleton<IMapper>(_ =>
+            services.TryAddSingleton<IMapper>(sp =>
             {
                 var mapper = new Mapper();
 
                 foreach (var assembly in assemblies.Distinct())
                 {
-                    mapper.RegisterMapper(assembly);
+                    mapper.RegisterMapper(assembly, type => ActivatorUtilities.CreateInstance(sp, type));
                 }
 
                 return mapper;
