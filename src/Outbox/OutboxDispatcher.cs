@@ -1,5 +1,18 @@
-namespace CoreMesh.Examples.Outbox.Outbox;
+using CoreMesh.Outbox.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
+namespace CoreMesh.Outbox;
+
+/// <summary>
+/// Background service that continuously polls the outbox store and publishes pending messages
+/// to the message broker via <see cref="IEventPublisher"/>.
+/// </summary>
+/// <remarks>
+/// Each iteration claims a batch of messages atomically to prevent duplicate publishing
+/// in multi-instance deployments. Zombie messages (stuck in <c>Processing</c> status) are
+/// periodically recovered and reset to <c>Pending</c>.
+/// </remarks>
 public class OutboxDispatcher(IServiceScopeFactory serviceScopeFactory) : BackgroundService
 {
     private const int BatchSize = 100;
@@ -10,6 +23,7 @@ public class OutboxDispatcher(IServiceScopeFactory serviceScopeFactory) : Backgr
 
     private DateTime _lastZombieReset = DateTime.MinValue;
 
+    /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)

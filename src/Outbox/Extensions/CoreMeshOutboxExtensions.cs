@@ -1,12 +1,38 @@
 using System.Reflection;
+using CoreMesh.Outbox.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace CoreMesh.Examples.Outbox.Outbox.Extensions;
+namespace CoreMesh.Outbox.Extensions;
 
+/// <summary>
+/// Extension methods for registering CoreMesh Outbox services.
+/// </summary>
 public static class CoreMeshOutboxExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddCoreMeshOutbox(params Assembly[] assemblies)
+        /// <summary>
+        /// Registers the core outbox services and applies the given <paramref name="configure"/> delegate.
+        /// <list type="bullet">
+        ///   <item><see cref="IEventTypeRegistry"/> — populated by scanning <paramref name="assemblies"/>.</item>
+        ///   <item><see cref="IEventHandler{TEvent}"/> implementations found in <paramref name="assemblies"/>.</item>
+        ///   <item><see cref="IEventDispatcher"/> → <see cref="EventDispatcher"/>.</item>
+        ///   <item><see cref="OutboxDispatcher"/> as a hosted background service.</item>
+        /// </list>
+        /// Use <paramref name="configure"/> to set up storage and transport:
+        /// <code>
+        /// services.AddCoreMeshOutbox(
+        ///     [typeof(Program).Assembly],
+        ///     options => {
+        ///         options.UseInMemoryStore();
+        ///         options.UseInMemoryChannel();
+        ///         options.WithConsumer();
+        ///     });
+        /// </code>
+        /// </summary>
+        public IServiceCollection AddCoreMeshOutbox(
+            Assembly[] assemblies,
+            Action<CoreMeshOutboxOptions> configure)
         {
             var allTypes = assemblies.SelectMany(x => x.GetTypes()).ToList();
 
@@ -36,8 +62,12 @@ public static class CoreMeshOutboxExtensions
                 registerEvent.Add(eventNameAttribute.EventName, type);
                 services.AddScoped(handlerInterfaceType, handlerImplementationType);
             }
-            
+
             services.AddSingleton<IEventTypeRegistry>(_ => new EventTypeRegistry(registerEvent));
+            services.AddScoped<IEventDispatcher, EventDispatcher>();
+            services.AddHostedService<OutboxDispatcher>();
+
+            configure(new CoreMeshOutboxOptions(services));
 
             return services;
         }

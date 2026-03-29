@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>CoreMesh.Outbox</RootNamespace>
+    <AssemblyName>CoreMesh.Outbox</AssemblyName>
+    <PackageId>CoreMesh.Outbox</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>DavidChen</Authors>
+    <Copyright>Copyright © 2026 DavidChen</Copyright>
+    <Description>Transactional Outbox pattern implementation for .NET. Provides background dispatching, in-memory store and channel, retry logic, zombie recovery, and a fluent DI registration API.</Description>
+    <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/DavidChen617/CoreMesh</PackageProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CoreMesh.Outbox.Abstractions" Version="0.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[10.0.0, )" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[10.0.0, )" />
+  </ItemGroup>
+  
+</Project>
