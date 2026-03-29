@@ -53,6 +53,9 @@ jobs:
             Validation)
               PROJECTS="src/Validation.Abstractions/Validation.Abstractions.csproj src/Validation/Validation.csproj"
               ;;
+            Outbox)
+              PROJECTS="src/Outbox.Abstractions/Outbox.Abstractions.csproj src/Outbox/Outbox.csproj"
+              ;;
             # Individual sub-package releases
             Dispatching.Abstractions)
               PROJECTS="src/Dispatching.Abstractions/Dispatching.Abstractions.csproj"
@@ -68,6 +71,9 @@ jobs:
               ;;
             Validation.Abstractions)
               PROJECTS="src/Validation.Abstractions/Validation.Abstractions.csproj"
+              ;;
+            Outbox.Abstractions)
+              PROJECTS="src/Outbox.Abstractions/Outbox.Abstractions.csproj"
               ;;
             *)
               echo "::warning::Unknown release branch: $BRANCH — no projects to pack."
