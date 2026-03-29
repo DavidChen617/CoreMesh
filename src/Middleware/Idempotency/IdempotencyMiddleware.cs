@@ -8,12 +8,25 @@ using Microsoft.Extensions.Logging;
 
 namespace CoreMesh.Middleware.Idempotency;
 
+/// <summary>
+/// ASP.NET Core middleware that enforces idempotency on POST endpoints decorated with
+/// <see cref="IdempotencyAttribute"/>.
+/// <para>
+/// On the first request: the downstream response is captured and stored via
+/// <see cref="IIdempotencyHandler"/>. On duplicate requests (same idempotency key):
+/// the cached response is replayed immediately without invoking the handler again.
+/// </para>
+/// </summary>
 public class IdempotencyMiddleware(
     RequestDelegate next,
     ILogger<IdempotencyMiddleware> logger,
     IServiceScopeFactory scopeFactory,
     IdempotencyOptions options)
 {
+    /// <summary>
+    /// Processes the HTTP request, enforcing idempotency where applicable.
+    /// </summary>
+    /// <param name="context">The current HTTP context.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         var idempotencyInfo = GetIdempotencyAttribute(context);
@@ -111,7 +124,7 @@ public class IdempotencyMiddleware(
             if (attribute is not null)
                 return new IdempotencyInfo(attribute.CustomIdempotencyKeyName);
         }
-        
+
         return null;
     }
 
