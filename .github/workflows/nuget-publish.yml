@@ -5,12 +5,19 @@ on:
     types: [closed]
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      feature:
+        description: 'Feature name to publish (e.g. Outbox, Validation, Mapper)'
+        required: true
+        type: string
 
 jobs:
   publish:
     if: |
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release/')
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/'))
     runs-on: ubuntu-latest
 
     steps:
@@ -26,8 +33,12 @@ jobs:
         id: resolve
         shell: bash
         run: |
-          BRANCH="${{ github.event.pull_request.head.ref }}"
-          FEATURE="${BRANCH#release/}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            FEATURE="${{ github.event.inputs.feature }}"
+          else
+            BRANCH="${{ github.event.pull_request.head.ref }}"
+            FEATURE="${BRANCH#release/}"
+          fi
           echo "feature=$FEATURE" >> $GITHUB_OUTPUT
 
           case "$FEATURE" in
