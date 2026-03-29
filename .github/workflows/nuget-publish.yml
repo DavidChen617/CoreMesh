@@ -39,55 +39,59 @@ jobs:
             BRANCH="${{ github.event.pull_request.head.ref }}"
             FEATURE="${BRANCH#release/}"
           fi
+          FEATURE="${FEATURE,,}"
           echo "feature=$FEATURE" >> $GITHUB_OUTPUT
 
           case "$FEATURE" in
             # Full group releases (abstractions/extensions included)
-            Dispatching)
+            dispatching)
               PROJECTS="src/Dispatching.Abstractions/Dispatching.Abstractions.csproj src/Dispatching/Dispatching.csproj"
               ;;
-            Endpoint)
+            endpoint)
               PROJECTS="src/Endpoints/Endpoints.csproj"
               ;;
-            Interception)
+            interception)
               PROJECTS="src/Interception/Interception.csproj src/Interception.Extensions/Interception.Extensions.csproj"
               ;;
-            Logging)
+            logging)
               PROJECTS="src/Logging/Logging.csproj"
               ;;
-            Mapper)
+            middleware)
+              PROJECTS="src/Middleware/Middleware.csproj"
+              ;;
+            mapper)
               PROJECTS="src/Mapper/Mapper.csproj src/Mapper.Extensions/Mapper.Extensions.csproj"
               ;;
-            Result)
+            result)
               PROJECTS="src/Result/Result.csproj src/Result.AspNetCore/Result.AspNetCore.csproj"
               ;;
-            Validation)
+            validation)
               PROJECTS="src/Validation.Abstractions/Validation.Abstractions.csproj src/Validation/Validation.csproj"
               ;;
-            Outbox)
+            outbox)
               PROJECTS="src/Outbox.Abstractions/Outbox.Abstractions.csproj src/Outbox/Outbox.csproj"
               ;;
             # Individual sub-package releases
-            Dispatching.Abstractions)
+            dispatching.abstractions)
               PROJECTS="src/Dispatching.Abstractions/Dispatching.Abstractions.csproj"
               ;;
-            Interception.Extensions)
+            interception.extensions)
               PROJECTS="src/Interception.Extensions/Interception.Extensions.csproj"
               ;;
-            Mapper.Extensions)
+            mapper.extensions)
               PROJECTS="src/Mapper.Extensions/Mapper.Extensions.csproj"
               ;;
-            Result.AspNetCore)
+            result.aspnetcore)
               PROJECTS="src/Result.AspNetCore/Result.AspNetCore.csproj"
               ;;
-            Validation.Abstractions)
+            validation.abstractions)
               PROJECTS="src/Validation.Abstractions/Validation.Abstractions.csproj"
               ;;
-            Outbox.Abstractions)
+            outbox.abstractions)
               PROJECTS="src/Outbox.Abstractions/Outbox.Abstractions.csproj"
               ;;
             *)
-              echo "::warning::Unknown release branch: $BRANCH — no projects to pack."
+              echo "::warning::Unknown feature: $FEATURE — no projects to pack."
               PROJECTS=""
               ;;
           esac

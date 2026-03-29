@@ -5,6 +5,7 @@
     <Project Path="samples/CoreMesh.Examples.Outbox/CoreMesh.Examples.Outbox.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Dispatching.Abstractions/Dispatching.Abstractions.csproj" />
     <Project Path="src/Dispatching/Dispatching.csproj" />
     <Project Path="src/Endpoints/Endpoints.csproj" />
     <Project Path="src/Interception.Extensions/Interception.Extensions.csproj" />
@@ -12,13 +13,13 @@
     <Project Path="src/Logging/Logging.csproj" />
     <Project Path="src/Mapper.Extensions/Mapper.Extensions.csproj" />
     <Project Path="src/Mapper/Mapper.csproj" />
+    <Project Path="src/Middleware/Middleware.csproj" />
     <Project Path="src/Outbox.Abstractions/Outbox.Abstractions.csproj" />
     <Project Path="src/Outbox/Outbox.csproj" />
     <Project Path="src/Result.AspNetCore/Result.AspNetCore.csproj" />
     <Project Path="src/Result/Result.csproj" />
     <Project Path="src/Validation.Abstractions/Validation.Abstractions.csproj" />
     <Project Path="src/Validation/Validation.csproj" />
-    <Project Path="src\Dispatching.Abstractions\Dispatching.Abstractions.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CoreMesh.Dispatching.Benchmarks/CoreMesh.Dispatching.Benchmarks.csproj" />
@@ -31,6 +32,7 @@
     <Project Path="tests/CoreMesh.Outbux.Tests/CoreMesh.Outbux.Tests.csproj" />
     <Project Path="tests/CoreMesh.Result.Tests/CoreMesh.Result.Tests.csproj" />
     <Project Path="tests/CoreMesh.Validation.Benchmarks/CoreMesh.Validation.Benchmarks.csproj" />
+    <Project Path="tests/CoreMesh.Middleware.Tests/CoreMesh.Middleware.Tests.csproj" />
     <Project Path="tests/CoreMesh.Validation.Tests/CoreMesh.Validation.Tests.csproj" />
   </Folder>
 </Solution>
