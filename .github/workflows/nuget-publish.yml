@@ -55,6 +55,9 @@ jobs:
             Logging)
               PROJECTS="src/Logging/Logging.csproj"
               ;;
+            Middleware)
+              PROJECTS="src/Middleware/Middleware.csproj"
+              ;;
             Mapper)
               PROJECTS="src/Mapper/Mapper.csproj src/Mapper.Extensions/Mapper.Extensions.csproj"
               ;;
