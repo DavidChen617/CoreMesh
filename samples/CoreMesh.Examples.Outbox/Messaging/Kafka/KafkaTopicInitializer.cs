@@ -1,13 +1,17 @@
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using Microsoft.Extensions.Configuration;
 
-namespace CoreMesh.Examples.Outbox.Messaging;
+namespace CoreMesh.Examples.Outbox.Messaging.Kafka;
 
-public class KafkaTopicInitializer : BackgroundService
+public class KafkaTopicInitializer(IConfiguration configuration) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var config = new AdminClientConfig { BootstrapServers = "192.168.65.4:9092" };
+        var config = new AdminClientConfig
+        {
+            BootstrapServers = configuration["KafkaOption:BootstrapServers"]
+        };
 
         using var adminClient = new AdminClientBuilder(config).Build();
 
@@ -15,9 +19,11 @@ public class KafkaTopicInitializer : BackgroundService
         {
             await adminClient.CreateTopicsAsync(
             [
-                new TopicSpecification { Name = "test-todo1", 
+                new TopicSpecification
+                {
+                    Name = "test-todo1",
                     NumPartitions = 1,
-                    ReplicationFactor = 1 
+                    ReplicationFactor = 1
                 }
             ]);
         }

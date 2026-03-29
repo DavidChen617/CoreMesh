@@ -1,7 +1,7 @@
 using Confluent.Kafka;
-using CoreMesh.Examples.Outbox.Outbox;
+using CoreMesh.Outbox.Abstractions;
 
-namespace CoreMesh.Examples.Outbox.Messaging;
+namespace CoreMesh.Examples.Outbox.Messaging.Kafka;
 
 public sealed class KafkaEventPublisher(IProducer<string, string> producer) : IEventPublisher
 {

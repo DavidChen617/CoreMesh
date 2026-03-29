@@ -1,32 +1,21 @@
-using System.Text.Json;
 using CoreMesh.Examples.Outbox.Data;
-using CoreMesh.Examples.Outbox.Entities;
-using CoreMesh.Examples.Outbox.Outbox;
+using CoreMesh.Outbox.Abstractions;
 
-namespace CoreMesh.Examples.Outbox.Services;
+namespace CoreMesh.Examples.Outbox.Todo;
 
-public class TodoService(AppDbContext db)
+public record CreateTodoCommand(string Title, string Description);
+
+public class TodoService(
+    AppDbContext db,
+    IOutboxWriter writer)
 {
-    public async Task CreateAsync(string title, string description, CancellationToken ct = default)
+    public async Task CreateAsync(CreateTodoCommand command, CancellationToken ct = default)
     {
-        var todo = new Todo { Title = title, Description = description };
+        var todo = new Entities.Todo { Title = command.Title, Description = command.Description };
 
         await db.Todos.AddAsync(todo, ct);
-        
-        var outboxMessage = new OutboxMessage
-        {
-            Id = Guid.NewGuid(),
-            EventType = "todo.created",
-            Payload = JsonSerializer.Serialize(new
-            {
-                TodoId = todo.Id,
-                todo.Title
-            }),
-            OccurredAtUtc = DateTimeOffset.UtcNow,
-            Status = OutboxMessageStatus.Pending
-        };
 
-        db.OutboxMessages.Add(outboxMessage);
+        await writer.AddAsync(new TodoCreatedEvent { TodoId = todo.Id, Title = command.Title }, ct);
 
         await db.SaveChangesAsync(ct);
     }
