@@ -5,7 +5,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>CoreMesh.Middleware</RootNamespace>
-    <AssemblyName>CoreMesh.Mapper.Middleware</AssemblyName>
+    <AssemblyName>CoreMesh.Middleware</AssemblyName>
+    <PackageId>CoreMesh.Middleware</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>DavidChen</Authors>
+    <Copyright>Copyright © 2026 DavidChen</Copyright>
+    <Description>ASP.NET Core middleware pipeline builder for CoreMesh — fluent registration API with built-in idempotency middleware support.</Description>
+    <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/DavidChen617/CoreMesh</PackageProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
