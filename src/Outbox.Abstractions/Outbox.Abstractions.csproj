@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>CoreMesh.Outbox.Abstractions</RootNamespace>
+    <AssemblyName>CoreMesh.Outbox.Abstractions</AssemblyName>
+    <Version>0.1.0</Version>
+    <Authors>DavidChen</Authors>
+    <Copyright>Copyright © 2026 DavidChen</Copyright>
+    <RepositoryUrl>https://github.com/DavidChen617/CoreMesh</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/DavidChen617/CoreMesh</PackageProjectUrl>
+    <Description>Core abstractions for CoreMesh.Outbox — interfaces, models, and attributes for defining events, handlers, store, writer, publisher, and message subscriber.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
