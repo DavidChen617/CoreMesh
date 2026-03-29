@@ -1,5 +1,18 @@
-namespace CoreMesh.Examples.Outbox.Outbox;
+using CoreMesh.Outbox.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
+namespace CoreMesh.Outbox;
+
+/// <summary>
+/// Background service that consumes messages from <see cref="IMessageSubscriber"/>
+/// and dispatches each one to its registered <see cref="IEventHandler{TEvent}"/>.
+/// </summary>
+/// <remarks>
+/// Failed dispatches are retried up to <c>MaxRetries</c> times via <see cref="IMessageSubscriber.RetryAsync"/>.
+/// After all retries are exhausted the message is permanently rejected via <see cref="IMessageSubscriber.NackAsync"/>.
+/// </remarks>
 public class EventConsumer(
     IMessageSubscriber subscriber,
     IServiceScopeFactory scopeFactory,
@@ -9,6 +22,7 @@ public class EventConsumer(
     private const int MaxRetries = 3;
     private readonly Dictionary<Guid, int> _retryCounts = new();
 
+    /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await foreach (var envelope in subscriber.SubscribeAsync(stoppingToken))
