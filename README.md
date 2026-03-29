@@ -22,6 +22,8 @@ Each package is independent — use only what you need.
 | [CoreMesh.Interception.Extensions](src/Interception.Extensions/README.md) | DI registration for CoreMesh.Interception | [![NuGet](https://img.shields.io/nuget/v/CoreMesh.Interception.Extensions)](https://www.nuget.org/packages/CoreMesh.Interception.Extensions) |
 | [CoreMesh.Endpoints](src/Endpoints/README.md) | Minimal API endpoint pattern for organized route registration | [![NuGet](https://img.shields.io/nuget/v/CoreMesh.Endpoints)](https://www.nuget.org/packages/CoreMesh.Endpoints) |
 | [CoreMesh.Logging](src/Logging/README.md) | File logger provider with rotation and category filtering | [![NuGet](https://img.shields.io/nuget/v/CoreMesh.Logging)](https://www.nuget.org/packages/CoreMesh.Logging) |
+| [CoreMesh.Outbox](src/Outbox/README.md) | Transactional Outbox pattern — background dispatch, retry, zombie recovery, in-memory defaults | [![NuGet](https://img.shields.io/nuget/v/CoreMesh.Outbox)](https://www.nuget.org/packages/CoreMesh.Outbox) |
+| [CoreMesh.Outbox.Abstractions](src/Outbox.Abstractions/README.md) | Contracts only — interfaces and models for events, handlers, store, writer, publisher | [![NuGet](https://img.shields.io/nuget/v/CoreMesh.Outbox.Abstractions)](https://www.nuget.org/packages/CoreMesh.Outbox.Abstractions) |
 
 ---
 
