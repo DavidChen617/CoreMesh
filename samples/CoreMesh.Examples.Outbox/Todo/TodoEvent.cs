@@ -1,6 +1,12 @@
-namespace CoreMesh.Examples.Outbox.Services;
+using CoreMesh.Outbox.Abstractions;
 
-public class TodoEvent
+namespace CoreMesh.Examples.Outbox.Todo;
+
+[EventName("todo.created")]
+public sealed record TodoCreatedEvent : IEvent
 {
-    
+    public Guid Id { get; } = Guid.NewGuid();
+    public DateTime OccurredAtUtc { get; } = DateTime.UtcNow;
+    public Guid TodoId { get; set; }
+    public string Title { get; set; } = string.Empty;
 }
