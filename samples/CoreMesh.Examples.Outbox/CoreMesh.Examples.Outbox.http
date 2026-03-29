@@ -1,0 +1,14 @@
+@CoreMesh.Examples.Outbox_HostAddress = http://localhost:5154
+
+### Create Todo
+# Creates a new Todo item and writes a TodoCreatedEvent into the outbox.
+# The OutboxDispatcher will pick it up and publish to the message broker.
+POST {{CoreMesh.Examples.Outbox_HostAddress}}/api/todo
+Content-Type: application/json
+
+{
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread"
+}
+
+###
